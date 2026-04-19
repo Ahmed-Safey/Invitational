@@ -6,13 +6,17 @@ export function useContent(pageSlug) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!pageSlug) return
+    if (!pageSlug) { setLoading(false); return }
+    let cancelled = false
+    setLoading(true)
     supabase
       .from('content_blocks')
       .select('*')
       .eq('page_slug', pageSlug)
       .order('sort_order')
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (cancelled) return
+        if (error) console.error('useContent:', error)
         const map = {}
         if (data) data.forEach(b => {
           if (['json', 'table', 'list'].includes(b.block_type)) {
@@ -25,6 +29,7 @@ export function useContent(pageSlug) {
         setBlocks(map)
         setLoading(false)
       })
+    return () => { cancelled = true }
   }, [pageSlug])
 
   return { blocks, loading }
@@ -35,13 +40,18 @@ export function useEvents(day, session) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    let cancelled = false
+    setLoading(true)
     let query = supabase.from('events').select('*').order('day').order('sort_order')
     if (day) query = query.eq('day', day)
     if (session) query = query.eq('session', session)
-    query.then(({ data }) => {
+    query.then(({ data, error }) => {
+      if (cancelled) return
+      if (error) console.error('useEvents:', error)
       setEvents(data || [])
       setLoading(false)
     })
+    return () => { cancelled = true }
   }, [day, session])
 
   return { events, loading }
@@ -50,9 +60,13 @@ export function useEvents(day, session) {
 export function useScoring() {
   const [scoring, setScoring] = useState([])
   useEffect(() => {
-    supabase.from('scoring_table').select('*').order('place').then(({ data }) => {
+    let cancelled = false
+    supabase.from('scoring_table').select('*').order('place').then(({ data, error }) => {
+      if (cancelled) return
+      if (error) console.error('useScoring:', error)
       setScoring(data || [])
     })
+    return () => { cancelled = true }
   }, [])
   return scoring
 }
@@ -61,9 +75,13 @@ export function usePrograms(seasonSlug) {
   const [programs, setPrograms] = useState([])
   useEffect(() => {
     if (!seasonSlug) return
-    supabase.from('programs').select('*').eq('season_slug', seasonSlug).then(({ data }) => {
+    let cancelled = false
+    supabase.from('programs').select('*').eq('season_slug', seasonSlug).then(({ data, error }) => {
+      if (cancelled) return
+      if (error) console.error('usePrograms:', error)
       setPrograms(data || [])
     })
+    return () => { cancelled = true }
   }, [seasonSlug])
   return programs
 }
@@ -71,9 +89,13 @@ export function usePrograms(seasonSlug) {
 export function useBankDetails() {
   const [bank, setBank] = useState(null)
   useEffect(() => {
-    supabase.from('bank_details').select('*').maybeSingle().then(({ data }) => {
+    let cancelled = false
+    supabase.from('bank_details').select('*').maybeSingle().then(({ data, error }) => {
+      if (cancelled) return
+      if (error) console.error('useBankDetails:', error)
       setBank(data)
     })
+    return () => { cancelled = true }
   }, [])
   return bank
 }

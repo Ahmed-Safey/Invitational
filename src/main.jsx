@@ -5,17 +5,20 @@ import { Toaster } from 'react-hot-toast'
 import { AuthProvider } from './lib/AuthContext'
 import { SiteProvider } from './lib/SiteContext'
 import App from './App'
+import ErrorBoundary from './components/ErrorBoundary'
 import './styles/index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
-        <SiteProvider>
-          <App />
-          <Toaster position="top-right" />
-        </SiteProvider>
-      </AuthProvider>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <AuthProvider>
+          <SiteProvider>
+            <App />
+            <Toaster position="top-right" />
+          </SiteProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   </React.StrictMode>
 )
