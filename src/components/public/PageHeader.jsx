@@ -28,6 +28,9 @@ export default function PageHeader({ label, title, titleHtml, subtitle, slug }) 
         <div className="relative z-10">
           {label && <p className="font-oswald text-xs font-medium tracking-[0.22em] uppercase text-gold mb-1">{label}</p>}
           {titleHtml ? (
+            // SECURITY: titleHtml is rendered with dangerouslySetInnerHTML.
+            // Only pass HARDCODED JSX strings here (for <br /> line breaks etc).
+            // NEVER pass DB-editable content directly — sanitize with DOMPurify first.
             <h1 className="font-oswald font-bold text-3xl md:text-5xl text-white tracking-tight uppercase leading-none"
               dangerouslySetInnerHTML={{ __html: titleHtml }} />
           ) : (

@@ -3,10 +3,15 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-if (!supabaseUrl || !supabaseKey) {
-  const msg = 'Supabase credentials missing. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your environment (.env locally, Vercel env vars in production).'
-  console.error(msg)
-  throw new Error(msg)
-}
+export const configError = (!supabaseUrl || !supabaseKey)
+  ? 'Supabase credentials missing. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your environment (.env locally, Vercel env vars in production).'
+  : null
 
-export const supabase = createClient(supabaseUrl, supabaseKey)
+if (configError) console.error(configError)
+
+// Use placeholders when config is missing so the app can still render a configuration error screen
+// instead of hanging on an infinite loading spinner.
+export const supabase = createClient(
+  supabaseUrl || 'https://missing.supabase.co',
+  supabaseKey || 'missing'
+)

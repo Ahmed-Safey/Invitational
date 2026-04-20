@@ -52,7 +52,7 @@ export default function Home() {
 
   return (
     <>
-      <PageTitle />
+      <PageTitle title="Swimming Eagles Invitational Series" description="A premier two-day swim invitational hosted by Cairo American College at the Hassan & Webb Aquatics Center. Enter your school, view the schedule, and download meet documents." />
 
       {/* Hero */}
       <section className="min-h-[90vh] flex flex-col items-center justify-center text-center px-8 py-24 relative overflow-hidden"
@@ -146,7 +146,7 @@ export default function Home() {
             <p className="section-label">{b.section_label_about || 'Welcome'}</p>
             <h2 className="section-title">About the <span className="text-crimson">Invitational</span></h2>
             <div className="divider" />
-            {['about_p1','about_p2','about_p3'].map(k => b[k] && <p key={k} className="leading-7 text-gray-500 mb-4">{b[k]}</p>)}
+            {['about_p1','about_p2','about_p3','about_p4'].map(k => b[k] && <p key={k} className="leading-7 text-gray-500 mb-4">{b[k]}</p>)}
           </div>
           <div className="grid grid-cols-2 gap-px bg-cream-mid">
             {[

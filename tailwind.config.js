@@ -12,7 +12,6 @@ export default {
       fontFamily: {
         oswald: ['Oswald', 'sans-serif'],
         crimsonPro: ['Crimson Pro', 'serif'],
-        roboto: ['Roboto Condensed', 'sans-serif'],
       },
     },
   },

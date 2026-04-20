@@ -37,7 +37,7 @@
     @apply w-64 bg-gray-900 text-white min-h-screen fixed left-0 top-0;
   }
   .admin-content {
-    @apply ml-64 p-8 min-h-screen bg-gray-50;
+    @apply ml-0 md:ml-64 p-4 md:p-8 min-h-screen bg-gray-50;
   }
   .admin-card {
     @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6;
