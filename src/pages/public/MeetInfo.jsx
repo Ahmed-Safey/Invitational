@@ -2,7 +2,6 @@ import PageHeader from '../../components/public/PageHeader'
 import Breadcrumb from '../../components/public/Breadcrumb'
 import { useContent, useScoring } from '../../lib/hooks'
 import { useSite } from '../../lib/SiteContext'
-import SeasonToggle from '../../components/public/SeasonToggle'
 import Loading from '../../components/public/Loading'
 
 function DataTable({ headers, keys, rows }) {
@@ -19,7 +18,7 @@ function DataTable({ headers, keys, rows }) {
 }
 
 export default function MeetInfo() {
-  const { settings, currentSeason } = useSite()
+  const { settings, seasons } = useSite()
   const { blocks: b, loading } = useContent('meet-info')
   const { scoring } = useScoring()
 
@@ -27,10 +26,23 @@ export default function MeetInfo() {
 
   return (
     <>
-      <PageHeader slug="meet-info" label="Everything You Need to Know" titleHtml='Meet <span class="text-gold">Information</span>' subtitle={currentSeason?.dates_display} />
+      <PageHeader slug="meet-info" label="Everything You Need to Know" titleHtml='Meet <span class="text-gold">Information</span>' />
       <Breadcrumb page="Meet Information" />
       <div className="max-w-[900px] mx-auto py-16 px-8">
-        <SeasonToggle />
+        {/* Both-seasons banner — content on this page is identical across seasons,
+            only the calendar dates differ, so we show them side by side instead
+            of forcing visitors to toggle back and forth. */}
+        {seasons.length > 0 && (
+          <div className="grid md:grid-cols-2 gap-3 mb-10">
+            {seasons.map(ss => (
+              <div key={ss.slug} className="bg-white border-l-4 border-l-crimson p-5">
+                <p className="font-oswald text-xs tracking-[0.2em] text-gray-400 uppercase mb-1">{ss.label}</p>
+                <p className="font-oswald font-bold text-xl text-charcoal leading-tight">{ss.dates_display}</p>
+                {ss.age_up_date && <p className="text-xs text-gray-500 mt-1">Age-up: <strong className="text-crimson">{ss.age_up_date}</strong></p>}
+              </div>
+            ))}
+          </div>
+        )}
 
         <h2 className="section-title">Venue & <span className="text-crimson">Equipment</span></h2>
         <div className="divider" />
