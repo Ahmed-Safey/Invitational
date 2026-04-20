@@ -1,13 +1,23 @@
 import { useState } from 'react'
 import PageHeader from '../../components/public/PageHeader'
 import Breadcrumb from '../../components/public/Breadcrumb'
-import { useEvents } from '../../lib/hooks'
+import { useEvents, useContent } from '../../lib/hooks'
 import { useSite } from '../../lib/SiteContext'
 
 export default function Schedule() {
   const [tab, setTab] = useState(1)
   const { currentSeason } = useSite()
   const { events, loading } = useEvents(null, null, currentSeason?.slug)
+  const { blocks } = useContent('schedule')
+
+  // Session titles are admin-editable via content_blocks. Fallbacks match the Master Plan v2.0
+  // structure and keep the page readable if blocks are missing.
+  const d1mTitle = blocks.day1_morning_title || '8 & Under Timed Finals + 11+ Prelims'
+  const d1eTitle = blocks.day1_evening_title || '11+ Finals'
+  const d2mTitle = blocks.day2_morning_title || '9–10 Timed Finals + 11+ Prelims'
+  const d2eTitle = blocks.day2_evening_title || '11+ Finals + Closing Relays'
+  const d1Label  = blocks.day1_tab_label || 'Friday — Day 1'
+  const d2Label  = blocks.day2_tab_label || 'Saturday — Day 2'
 
   const dayEvents = (d, s) => events.filter(e => e.day === d && e.session === s)
 
@@ -80,7 +90,7 @@ export default function Schedule() {
       <Breadcrumb page="Schedule of Events" />
       <div className="max-w-[900px] mx-auto py-16 px-8">
         <div className="flex gap-0 border-b-2 border-cream-mid mb-8">
-          {[{ d:1, label:'Friday — Day 1' },{ d:2, label:'Saturday — Day 2' }].map(t => (
+          {[{ d:1, label:d1Label },{ d:2, label:d2Label }].map(t => (
             <button key={t.d} onClick={() => setTab(t.d)}
               className={`font-oswald text-sm font-semibold tracking-widest uppercase px-6 py-3 border-b-[3px] -mb-[2px] transition-colors cursor-pointer bg-transparent ${tab === t.d ? 'text-crimson border-crimson' : 'text-gray-400 border-transparent hover:text-charcoal'}`}>
               {t.label}
@@ -97,12 +107,12 @@ export default function Schedule() {
         ) : (
           <>
             {tab === 1 && <>
-              {renderSession(1, 'morning', '8 & Under Timed Finals + 11+ Prelims')}
-              {renderSession(1, 'evening', '11+ Finals')}
+              {renderSession(1, 'morning', d1mTitle)}
+              {renderSession(1, 'evening', d1eTitle)}
             </>}
             {tab === 2 && <>
-              {renderSession(2, 'morning', '9–10 Timed Finals + 11+ Prelims')}
-              {renderSession(2, 'evening', '11+ Finals + Closing Relays')}
+              {renderSession(2, 'morning', d2mTitle)}
+              {renderSession(2, 'evening', d2eTitle)}
             </>}
           </>
         )}

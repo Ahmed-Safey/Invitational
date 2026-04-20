@@ -17,15 +17,11 @@ export default function PagesAdmin() {
 
   const toggleVisible = async (p) => {
     if (p.slug === 'home') return toast.error('Cannot hide homepage')
-    // Warn if this would leave fewer than 3 visible pages — prevents accidentally blanking the nav
-    if (p.is_visible) {
-      const visibleCount = pagesList.filter(x => x.is_visible).length
-      if (visibleCount <= 3) {
-        if (!confirm(`Only ${visibleCount - 1} page(s) will remain visible in the navigation. Continue?`)) return
-      }
-    }
     await supabase.from('pages').update({ is_visible: !p.is_visible }).eq('id', p.id)
     toast.success(`${p.title} ${p.is_visible ? 'hidden' : 'visible'}`)
+    // Warn if the navigation has fewer than 3 visible pages remaining — prevents an effectively empty navbar
+    const remaining = pagesList.filter(x => x.id === p.id ? !p.is_visible : x.is_visible).length
+    if (remaining < 3) toast(`Heads up: only ${remaining} page(s) visible in the navigation.`, { icon: '⚠️' })
     load(); refetch()
   }
 
