@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useSite } from '../../lib/SiteContext'
 import AdminLayout from '../../components/admin/AdminLayout'
@@ -9,11 +9,11 @@ export default function PagesAdmin() {
   const [pagesList, setPagesList] = useState([])
   const [editing, setEditing] = useState(null)
 
-  const load = async () => {
+  const load = useCallback(async () => {
     const { data } = await supabase.from('pages').select('*').order('nav_order')
     setPagesList(data || [])
-  }
-  useEffect(() => { load() }, [])
+  }, [])
+  useEffect(() => { load() }, [load])
 
   const toggleVisible = async (p) => {
     if (p.slug === 'home') return toast.error('Cannot hide homepage')

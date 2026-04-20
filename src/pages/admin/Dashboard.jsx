@@ -19,6 +19,10 @@ export default function Dashboard() {
         blocks: cbRes.count || 0,
         media: mRes.count || 0,
       })
+    }).catch(err => {
+      // Don't block the dashboard render if a count query fails (RLS timing,
+      // offline, etc.). Stats stay at 0 and the admin can still navigate.
+      console.error('Dashboard stats query failed:', err)
     })
   }, [])
 

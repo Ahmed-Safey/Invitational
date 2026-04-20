@@ -69,13 +69,13 @@ export default function Sessions() {
       <div className="max-w-[900px] mx-auto py-16 px-8">
         <SeasonToggle />
 
-        <h2 className="section-title">{(sched.day1_tab_label || 'Friday — Day 1').split('—')[0].trim()} — <span className="text-crimson">{(sched.day1_tab_label || 'Friday — Day 1').split('—')[1]?.trim() || 'Day 1'}</span></h2>
+        <h2 className="section-title"><span className="text-crimson">{sched.day1_tab_label || 'Friday — Day 1'}</span></h2>
         <div className="divider" />
         <SessionCard blockKey="fri_session_8u" />
         <SessionCard blockKey="fri_session_1" />
         <SessionCard blockKey="fri_session_2" />
 
-        <h2 className="section-title mt-12">{(sched.day2_tab_label || 'Saturday — Day 2').split('—')[0].trim()} — <span className="text-crimson">{(sched.day2_tab_label || 'Saturday — Day 2').split('—')[1]?.trim() || 'Day 2'}</span></h2>
+        <h2 className="section-title mt-12"><span className="text-crimson">{sched.day2_tab_label || 'Saturday — Day 2'}</span></h2>
         <div className="divider" />
         <SessionCard blockKey="sat_session_1" />
         <SessionCard blockKey="sat_session_2" />

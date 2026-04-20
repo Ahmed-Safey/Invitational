@@ -27,13 +27,13 @@ export default function AdminNav() {
       {/* Mobile header */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-gray-900 border-b border-white/10 px-4 py-3 flex items-center justify-between">
         <Link to="/" className="text-white no-underline font-bold text-sm tracking-wider">SEIS Admin</Link>
-        <button onClick={() => setMobileOpen(!mobileOpen)} className="text-gray-400 bg-transparent border-none cursor-pointer text-xl" aria-label="Toggle menu">
+        <button onClick={() => setMobileOpen(!mobileOpen)} className="text-gray-400 bg-transparent border-none cursor-pointer text-xl" aria-label="Toggle menu" aria-expanded={mobileOpen} aria-controls="admin-sidebar">
           {mobileOpen ? '✕' : '☰'}
         </button>
       </div>
 
       {/* Sidebar */}
-      <aside className={`admin-sidebar flex flex-col z-40 transition-transform ${mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+      <aside id="admin-sidebar" className={`admin-sidebar flex flex-col z-40 transition-transform ${mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
         <div className="p-5 border-b border-white/10 hidden md:block">
           <Link to="/" className="text-white no-underline font-bold text-sm tracking-wider">SEIS Admin</Link>
         </div>

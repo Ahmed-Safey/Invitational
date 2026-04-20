@@ -1,20 +1,23 @@
 import { Link } from 'react-router-dom'
 import PageHeader from '../../components/public/PageHeader'
 import Breadcrumb from '../../components/public/Breadcrumb'
-import { usePrograms } from '../../lib/hooks'
+import { usePrograms, useContent } from '../../lib/hooks'
 import { useSite } from '../../lib/SiteContext'
 import SeasonToggle from '../../components/public/SeasonToggle'
 
-const defaultDescs = {
-  psych_sheet: 'Pre-seeded entry lists ranked by submitted times. Published after entry deadline.',
+// Fallback labels + descriptions used only if the DB doesn't have the blocks
+// yet (e.g. the 20260421003000_programs_copy.sql migration hasn't run).
+const FALLBACK_LABELS = { psych_sheet: 'Psych Sheets', heat_sheet: 'Heat Sheets', program_booklet: 'Meet Program Booklet' }
+const FALLBACK_DESCS = {
+  psych_sheet: 'Pre-seeded entry lists ranked by submitted times. Published after the entry deadline.',
   heat_sheet: 'Final lane and heat assignments for all events. Published 24 hours before each session.',
   program_booklet: 'Comprehensive meet program including schedule, event order, team rosters, and pool records.',
 }
-const defaultLabels = { psych_sheet: 'Psych Sheets', heat_sheet: 'Heat Sheets', program_booklet: 'Meet Program Booklet' }
 
 export default function Programs() {
   const { activeSeason } = useSite()
   const programs = usePrograms(activeSeason)
+  const { blocks: b } = useContent('programs')
 
   // Filter out entry_file — that's on the Entries page
   const displayPrograms = programs.filter(p => p.program_type !== 'entry_file')
@@ -28,10 +31,12 @@ export default function Programs() {
         <div className="grid md:grid-cols-2 gap-4">
           {['psych_sheet', 'heat_sheet', 'program_booklet'].map(type => {
             const prog = displayPrograms.find(p => p.program_type === type)
+            const label = prog?.label || b[`${type}_label`] || FALLBACK_LABELS[type]
+            const desc = b[`${type}_desc`] || FALLBACK_DESCS[type]
             return (
               <div key={type} className={`info-card ${type === 'program_booklet' ? 'md:col-span-2' : ''}`}>
-                <h3>{prog?.label || defaultLabels[type]}</h3>
-                <p className="text-sm text-gray-500 mb-4">{defaultDescs[type]}</p>
+                <h3>{label}</h3>
+                <p className="text-sm text-gray-500 mb-4">{desc}</p>
                 {prog?.google_drive_url ? (
                   <a href={prog.google_drive_url} target="_blank" rel="noreferrer" className="btn-primary no-underline text-xs">↓ Download</a>
                 ) : (

@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../lib/supabase'
 import AdminLayout from '../../components/admin/AdminLayout'
 import toast from 'react-hot-toast'
+import { updateRow } from '../../lib/utils'
 
 export default function ContentAdmin() {
   const [pageSlug, setPageSlug] = useState('')
@@ -93,15 +94,13 @@ export default function ContentAdmin() {
                 </div>
                 <div className="flex items-center gap-2">
                   <label className="flex items-center gap-1 text-xs cursor-pointer">
-                    <input type="checkbox" checked={b.is_visible} onChange={e => {
-                      setBlocks(blocks.map(x => x.id === b.id ? {...x, is_visible: e.target.checked} : x))
-                    }} />
+                    <input type="checkbox" checked={b.is_visible} onChange={e => setBlocks(updateRow(blocks, b.id, { is_visible: e.target.checked }))} />
                     Visible
                   </label>
                   <button onClick={() => deleteBlock(b.id)} className="text-xs text-red-500 hover:underline cursor-pointer bg-transparent border-none">Delete</button>
                 </div>
               </div>
-              <textarea value={b.content} onChange={e => setBlocks(blocks.map(x => x.id === b.id ? {...x, content: e.target.value} : x))}
+              <textarea value={b.content} onChange={e => setBlocks(updateRow(blocks, b.id, { content: e.target.value }))}
                 className="admin-input h-24 font-mono text-sm mb-2" />
               <button onClick={() => saveBlock(b)} className="admin-btn text-xs">Save</button>
             </div>
