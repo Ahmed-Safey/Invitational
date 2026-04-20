@@ -29,6 +29,9 @@ function FormatCard({ title, items }) {
 export default function Home() {
   const { settings, seasons, currentSeason, getMediaUrl } = useSite()
   const { blocks: b } = useContent('home')
+  // Session titles/labels shared with the Schedule page so they stay in sync
+  // when admins rename them for a future season.
+  const { blocks: sched } = useContent('schedule')
   const { events } = useEvents(null, null, currentSeason?.slug)
   const heroUrl = driveUrl(getMediaUrl('hero-photo'))
   const logoUrl = driveUrl(getMediaUrl('seis-logo'), 600)
@@ -150,7 +153,7 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-2 gap-px bg-cream-mid">
             {[
-              { num: b.stat_days, label: b.stat_days_label || 'Days Per Meet' },
+              { num: b.stat_days, label: b.stat_days_label || 'Competition Days' },
               { num: b.stat_lanes, label: b.stat_lanes_label || 'Lanes' },
               { num: b.stat_course, label: b.stat_course_label || 'Short Course' },
               { num: b.stat_age_groups, label: b.stat_age_groups_label || 'Age Groups' },
@@ -191,17 +194,17 @@ export default function Home() {
             <div className="divider" />
             <div className="grid md:grid-cols-2 gap-4 mb-8">
               <div className="info-card">
-                <h3>Friday — Day 1</h3>
+                <h3>{sched.day1_tab_label || 'Friday — Day 1'}</h3>
                 <div className="space-y-2 text-sm text-gray-500 mt-2">
-                  <p>☀ <strong>Morning:</strong> 8&U Timed Finals + 11+ Prelims ({d1m} events)</p>
-                  <p>🌙 <strong>Evening:</strong> 11+ Finals ({d1e} events)</p>
+                  <p>☀ <strong>Morning:</strong> {sched.day1_morning_title || '8&U Timed Finals + 11+ Prelims'} ({d1m} events)</p>
+                  <p>🌙 <strong>Evening:</strong> {sched.day1_evening_title || '11+ Finals'} ({d1e} events)</p>
                 </div>
               </div>
               <div className="info-card">
-                <h3>Saturday — Day 2</h3>
+                <h3>{sched.day2_tab_label || 'Saturday — Day 2'}</h3>
                 <div className="space-y-2 text-sm text-gray-500 mt-2">
-                  <p>☀ <strong>Morning:</strong> 9–10 Timed Finals + 11+ Prelims ({d2m} events)</p>
-                  <p>🌙 <strong>Evening:</strong> 11+ Finals + Closing Relays ({d2e} events)</p>
+                  <p>☀ <strong>Morning:</strong> {sched.day2_morning_title || '9–10 Timed Finals + 11+ Prelims'} ({d2m} events)</p>
+                  <p>🌙 <strong>Evening:</strong> {sched.day2_evening_title || '11+ Finals + Closing Relays'} ({d2e} events)</p>
                 </div>
               </div>
             </div>

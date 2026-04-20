@@ -7,6 +7,7 @@ import Footer from './components/public/Footer'
 import BackToTop from './components/public/BackToTop'
 import ScrollToTop from './components/public/ScrollToTop'
 import Loading from './components/public/Loading'
+import ErrorScreen from './components/public/ErrorScreen'
 
 // Public pages (eagerly loaded — small and cache-critical)
 import Home from './pages/public/Home'
@@ -43,19 +44,6 @@ function VisibleRoute({ slug, element }) {
   const page = pages.find(p => p.slug === slug)
   if (!page || !page.is_visible) return <NotFound />
   return element
-}
-
-function ErrorScreen({ message }) {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-cream px-8">
-      <div className="text-center max-w-md">
-        <div className="font-oswald font-bold text-6xl text-crimson mb-4">!</div>
-        <h1 className="font-oswald font-bold text-2xl text-black uppercase tracking-wider mb-3">Connection Error</h1>
-        <p className="text-gray-500 text-sm mb-6">{message || 'Unable to connect to the database. Please try again later.'}</p>
-        <button onClick={() => window.location.reload()} className="btn-primary cursor-pointer">Retry</button>
-      </div>
-    </div>
-  )
 }
 
 export default function App() {

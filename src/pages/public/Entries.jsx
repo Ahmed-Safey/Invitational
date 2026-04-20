@@ -14,11 +14,15 @@ export default function Entries() {
 
   useEffect(() => {
     if (!activeSeason) return
+    // Cancellation flag prevents stale state updates when the user toggles
+    // seasons rapidly and the earlier fetch resolves after the later one.
+    let cancelled = false
     supabase.from('programs').select('*')
       .eq('season_slug', activeSeason)
       .eq('program_type', 'entry_file')
       .maybeSingle()
-      .then(({ data }) => setEntryFile(data))
+      .then(({ data }) => { if (!cancelled) setEntryFile(data) })
+    return () => { cancelled = true }
   }, [activeSeason])
 
   return (

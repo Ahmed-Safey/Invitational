@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../../lib/AuthContext'
+import PageTitle from '../../components/public/PageTitle'
 
 export default function Login() {
   const { user, signIn } = useAuth()
@@ -21,6 +22,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
+      <PageTitle title="Admin Sign In" />
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <h1 className="text-white font-bold text-xl tracking-wider">SEIS Admin</h1>

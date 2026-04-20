@@ -3,12 +3,10 @@ import { supabase } from '../../lib/supabase'
 import { useSite } from '../../lib/SiteContext'
 import AdminLayout from '../../components/admin/AdminLayout'
 import toast from 'react-hot-toast'
-
-const PROGRAM_TYPES = ['entry_file', 'heat_sheet', 'program_booklet', 'psych_sheet']
-const TYPE_LABELS = { psych_sheet: 'Psych Sheets', heat_sheet: 'Heat Sheets', program_booklet: 'Program Booklet', entry_file: 'Entry File (.cl2)' }
+import { PROGRAM_TYPES, PROGRAM_TYPE_LABELS as TYPE_LABELS, buildProgramSlotsForSeason } from '../../lib/constants'
 
 export default function ProgramsAdmin() {
-  const { refetch, seasons } = useSite()
+  const { seasons } = useSite()
   const [programs, setPrograms] = useState([])
 
   const load = async () => {
@@ -36,12 +34,7 @@ export default function ProgramsAdmin() {
     const existing = programs.filter(p => p.season_slug === seasonSlug).map(p => p.program_type)
     const missing = PROGRAM_TYPES.filter(t => !existing.includes(t))
     if (missing.length === 0) return toast('All program slots already exist')
-    const rows = missing.map(t => ({
-      season_slug: seasonSlug,
-      program_type: t,
-      label: `${seasonLabel} ${TYPE_LABELS[t]}`,
-      is_published: false,
-    }))
+    const rows = buildProgramSlotsForSeason(seasonSlug, seasonLabel).filter(r => missing.includes(r.program_type))
     const { error } = await supabase.from('programs').insert(rows)
     if (error) toast.error(error.message)
     else { toast.success(`Added ${missing.length} program slot(s)`); load() }

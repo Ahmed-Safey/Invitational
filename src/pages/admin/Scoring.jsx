@@ -17,7 +17,7 @@ export default function Scoring() {
       individual_points: row.individual_points, relay_points: row.relay_points
     }).eq('id', row.id)
     if (error) toast.error(error.message)
-    else toast.success('Scoring updated')
+    else { toast.success('Scoring updated'); load() }
   }
 
   const content = (

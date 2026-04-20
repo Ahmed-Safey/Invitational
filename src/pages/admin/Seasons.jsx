@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase'
 import { useSite } from '../../lib/SiteContext'
 import AdminLayout from '../../components/admin/AdminLayout'
 import toast from 'react-hot-toast'
+import { buildProgramSlotsForSeason } from '../../lib/constants'
 
 export default function Seasons() {
   const { refetch } = useSite()
@@ -51,13 +52,7 @@ export default function Seasons() {
     const { error } = await supabase.from('seasons').insert({ ...newSeason, is_current: false })
     if (error) { toast.error(error.message); setSaving(false); return }
     // Auto-create the 4 standard program slots for this season
-    const programTypes = [
-      { program_type: 'entry_file', label: `${newSeason.label} Entry File` },
-      { program_type: 'heat_sheet', label: `${newSeason.label} Heat Sheets` },
-      { program_type: 'program_booklet', label: `${newSeason.label} Meet Program` },
-      { program_type: 'psych_sheet', label: `${newSeason.label} Psych Sheets` },
-    ]
-    await supabase.from('programs').insert(programTypes.map(p => ({ ...p, season_slug: newSeason.slug, is_published: false })))
+    await supabase.from('programs').insert(buildProgramSlotsForSeason(newSeason.slug, newSeason.label))
     toast.success('Season added with program slots')
     setAdding(false); setNewSeason({ slug: '', label: '', dates_display: '', age_up_date: '' }); load(); refetch()
     setSaving(false)

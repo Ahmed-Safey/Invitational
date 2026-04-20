@@ -9,9 +9,14 @@ export default function Navbar() {
   const location = useLocation()
   const logoUrl = driveUrl(getMediaUrl('seis-logo'), 400)
 
-  const navPages = pages.filter(p => p.nav_label && p.slug !== 'home' && p.is_visible).sort((a, b) => a.nav_order - b.nav_order)
+  // Contact is always the pill CTA, never in the regular nav list (so it isn't
+  // duplicated if an admin accidentally fills its nav_label).
+  const navPages = pages.filter(p => p.nav_label && p.slug !== 'home' && p.slug !== 'contact' && p.is_visible).sort((a, b) => a.nav_order - b.nav_order)
   const isActive = (slug) => location.pathname === `/${slug}` || (slug === 'home' && location.pathname === '/')
-  const contactVisible = pages.some(p => p.slug === 'contact' && p.is_visible)
+  const contactPage = pages.find(p => p.slug === 'contact' && p.is_visible)
+  // CTA label follows the Contact page's nav_label when set so admin renames
+  // flow through to the pill button. Falls back to the traditional copy.
+  const ctaLabel = contactPage?.nav_label || 'Register Interest'
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-black/[0.97] backdrop-blur-sm border-b-2 border-crimson flex items-center justify-between px-2 md:px-6 h-[68px]">
@@ -32,17 +37,17 @@ export default function Navbar() {
             >{p.nav_label}</Link>
           </li>
         ))}
-        {contactVisible && (
+        {contactPage && (
           <li>
             <Link to="/contact" className="bg-crimson text-white font-oswald text-xs font-semibold tracking-widest uppercase px-4 py-2 rounded-sm hover:bg-crimson-dark transition-colors no-underline">
-              Register Interest
+              {ctaLabel}
             </Link>
           </li>
         )}
       </ul>
 
       {/* Hamburger */}
-      <button onClick={() => setOpen(!open)} className="lg:hidden flex flex-col gap-[5px] p-1.5 bg-transparent border-none cursor-pointer" aria-label="Menu">
+      <button onClick={() => setOpen(!open)} className="lg:hidden flex flex-col gap-[5px] p-1.5 bg-transparent border-none cursor-pointer" aria-label="Menu" aria-expanded={open} aria-controls="mobile-menu">
         <span className={`block w-6 h-0.5 bg-gray-400 rounded transition-all ${open ? 'translate-y-[7px] rotate-45' : ''}`} />
         <span className={`block w-6 h-0.5 bg-gray-400 rounded transition-all ${open ? 'opacity-0' : ''}`} />
         <span className={`block w-6 h-0.5 bg-gray-400 rounded transition-all ${open ? '-translate-y-[7px] -rotate-45' : ''}`} />
@@ -50,7 +55,7 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {open && (
-        <ul className="absolute top-[68px] left-0 right-0 bg-black/[0.98] flex flex-col p-4 gap-0 border-b-2 border-crimson lg:hidden list-none">
+        <ul id="mobile-menu" className="absolute top-[68px] left-0 right-0 bg-black/[0.98] flex flex-col p-4 gap-0 border-b-2 border-crimson lg:hidden list-none">
           {navPages.map(p => (
             <li key={p.slug} className="w-full">
               <Link to={`/${p.slug}`} onClick={() => setOpen(false)}
@@ -59,11 +64,11 @@ export default function Navbar() {
               </Link>
             </li>
           ))}
-          {contactVisible && (
+          {contactPage && (
             <li>
               <Link to="/contact" onClick={() => setOpen(false)}
                 className="inline-block mt-3 bg-crimson text-white font-oswald text-xs font-semibold tracking-widest uppercase px-4 py-2 rounded-sm no-underline">
-                Register Interest
+                {ctaLabel}
               </Link>
             </li>
           )}

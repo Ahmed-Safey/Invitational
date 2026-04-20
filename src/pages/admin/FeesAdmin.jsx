@@ -45,7 +45,7 @@ export default function FeesAdmin() {
     }
     const { error } = await supabase.from('bank_details').update(updates).eq('id', 1)
     if (error) toast.error(error.message)
-    else toast.success('Bank details saved')
+    else { toast.success('Bank details saved'); refetch() }
     setSaving(false)
   }
 

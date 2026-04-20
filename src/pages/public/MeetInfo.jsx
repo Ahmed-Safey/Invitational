@@ -21,7 +21,7 @@ function DataTable({ headers, keys, rows }) {
 export default function MeetInfo() {
   const { settings, currentSeason } = useSite()
   const { blocks: b, loading } = useContent('meet-info')
-  const scoring = useScoring()
+  const { scoring } = useScoring()
 
   if (loading) return <><PageHeader slug="meet-info" label="Everything You Need to Know" titleHtml='Meet <span class="text-gold">Information</span>' /><Loading /></>
 

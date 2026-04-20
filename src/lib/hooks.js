@@ -21,7 +21,13 @@ export function useContent(pageSlug) {
         if (data) data.forEach(b => {
           if (['json', 'table', 'list'].includes(b.block_type)) {
             try { map[b.block_key] = JSON.parse(b.content) }
-            catch { map[b.block_key] = b.content }
+            catch (err) {
+              // Fall back to raw string but surface the key so consumers can
+              // notice malformed JSON blocks in the admin instead of silently
+              // rendering the wrong fallback branch.
+              console.warn(`[useContent] ${pageSlug}.${b.block_key} (${b.block_type}) failed to parse as JSON:`, err.message)
+              map[b.block_key] = b.content
+            }
           } else {
             map[b.block_key] = b.content
           }
@@ -60,16 +66,18 @@ export function useEvents(day, session, seasonSlug) {
 
 export function useScoring() {
   const [scoring, setScoring] = useState([])
+  const [loading, setLoading] = useState(true)
   useEffect(() => {
     let cancelled = false
     supabase.from('scoring_table').select('*').order('place').then(({ data, error }) => {
       if (cancelled) return
       if (error) console.error('useScoring:', error)
       setScoring(data || [])
+      setLoading(false)
     })
     return () => { cancelled = true }
   }, [])
-  return scoring
+  return { scoring, loading }
 }
 
 export function usePrograms(seasonSlug) {
