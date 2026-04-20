@@ -47,18 +47,25 @@ function EventForm({ evt, onSave, onCancel, saving }) {
 }
 
 export default function Events() {
-  const { refetch } = useSite()
+  const { refetch, seasons, currentSeason } = useSite()
   const [events, setEvents] = useState([])
-  const [filter, setFilter] = useState({ day: '', session: '' })
+  const [filter, setFilter] = useState({ day: '', session: '', season: '' })
   const [editing, setEditing] = useState(null)
   const [newEvent, setNewEvent] = useState(null)
   const [saving, setSaving] = useState(false)
 
+  // Default the season filter to the currently active season once it loads
+  useEffect(() => {
+    if (!filter.season && currentSeason?.slug) setFilter(f => ({ ...f, season: currentSeason.slug }))
+  }, [currentSeason?.slug])
+
   const load = async () => {
-    const { data } = await supabase.from('events').select('*').order('day').order('sort_order')
+    let q = supabase.from('events').select('*').order('day').order('sort_order')
+    if (filter.season) q = q.eq('season_slug', filter.season)
+    const { data } = await q
     setEvents(data || [])
   }
-  useEffect(() => { load() }, [])
+  useEffect(() => { load() }, [filter.season])
 
   let filtered = events
   if (filter.day) filtered = filtered.filter(e => e.day === parseInt(filter.day))
@@ -71,6 +78,7 @@ export default function Events() {
       distance: evt.distance, stroke: evt.stroke, age_group: evt.age_group,
       format: evt.format, day: evt.day, session: evt.session,
       sort_order: evt.sort_order, is_break: evt.is_break, break_label: evt.break_label,
+      season_slug: evt.season_slug || filter.season || currentSeason?.slug,
     }
     if (evt.id) {
       const { error } = await supabase.from('events').update(data).eq('id', evt.id)
@@ -97,7 +105,8 @@ export default function Events() {
       stroke: null, age_group: '11+', format: 'timed_final',
       day: filter.day ? parseInt(filter.day) : 1,
       session: filter.session || 'morning',
-      sort_order: events.length + 1, is_break: true, break_label: 'Break'
+      sort_order: events.length + 1, is_break: true, break_label: 'Break',
+      season_slug: filter.season || currentSeason?.slug,
     })
   }
 
@@ -110,9 +119,12 @@ export default function Events() {
       <p className="text-sm text-gray-500 mb-4">{eventCount} events + {breakCount} breaks across {new Set(events.map(e => e.day)).size} days</p>
 
       <div className="flex gap-3 mb-4 flex-wrap">
+        <select value={filter.season} onChange={e => setFilter({...filter, season: e.target.value})} className="admin-input max-w-[200px]">
+          {seasons.map(s => <option key={s.slug} value={s.slug}>{s.label}{s.is_current ? ' (active)' : ''}</option>)}
+        </select>
         <select value={filter.day} onChange={e => setFilter({...filter, day: e.target.value})} className="admin-input max-w-[150px]"><option value="">All Days</option><option value="1">Day 1</option><option value="2">Day 2</option></select>
         <select value={filter.session} onChange={e => setFilter({...filter, session: e.target.value})} className="admin-input max-w-[150px]"><option value="">All Sessions</option><option value="morning">Morning</option><option value="evening">Evening</option></select>
-        <button onClick={() => setNewEvent({...emptyEvent, sort_order: events.length + 1})} className="admin-btn">+ Add Event</button>
+        <button onClick={() => setNewEvent({...emptyEvent, sort_order: events.length + 1, season_slug: filter.season || currentSeason?.slug})} className="admin-btn">+ Add Event</button>
         <button onClick={addBreak} className="admin-btn-outline">+ Add Break</button>
       </div>
 

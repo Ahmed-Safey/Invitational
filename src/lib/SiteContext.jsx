@@ -31,8 +31,16 @@ export function SiteProvider({ children }) {
         mediaRes.data.forEach(m => { map[m.slug] = m })
         setMedia(map)
       }
-      if (!activeSeason && settingsRes.data) {
-        setActiveSeason(settingsRes.data.active_season)
+      // Validate the stored season slug against the loaded seasons.
+      // If it references a deleted/renamed season, fall back to settings.active_season.
+      const loadedSeasons = seasonsRes.data || []
+      const stored = localStorage.getItem('seis_season')
+      const storedIsValid = stored && loadedSeasons.some(s => s.slug === stored)
+      if (!storedIsValid) {
+        if (stored) localStorage.removeItem('seis_season')
+        if (settingsRes.data) setActiveSeason(settingsRes.data.active_season)
+      } else if (!activeSeason) {
+        setActiveSeason(stored)
       }
       setError(null)
     } catch (err) {

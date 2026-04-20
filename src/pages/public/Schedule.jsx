@@ -2,36 +2,50 @@ import { useState } from 'react'
 import PageHeader from '../../components/public/PageHeader'
 import Breadcrumb from '../../components/public/Breadcrumb'
 import { useEvents } from '../../lib/hooks'
+import { useSite } from '../../lib/SiteContext'
 
 export default function Schedule() {
   const [tab, setTab] = useState(1)
-  const { events } = useEvents()
+  const { currentSeason } = useSite()
+  const { events, loading } = useEvents(null, null, currentSeason?.slug)
 
   const dayEvents = (d, s) => events.filter(e => e.day === d && e.session === s)
+
+  // Pair girls/boys rows by event_name equality (robust to reorders and
+  // non-consecutive numbering). Consumes both rows when matched.
+  const buildRows = (evts) => {
+    const rows = []
+    const used = new Set()
+    evts.forEach((e, idx) => {
+      if (used.has(idx)) return
+      used.add(idx)
+      if (e.is_break) {
+        rows.push({ type: 'break', label: e.break_label })
+        return
+      }
+      if (e.gender === 'mixed') {
+        rows.push({ type: 'event', girls: e.event_number, boys: '—', name: e.event_name, format: e.format, isRelay: e.stroke === 'relay' })
+        return
+      }
+      // Find the opposite-gender row with the same event_name that isn't yet paired
+      const partnerIdx = evts.findIndex((o, j) => !used.has(j) && j !== idx && o.event_name === e.event_name && ((e.gender === 'girls' && o.gender === 'boys') || (e.gender === 'boys' && o.gender === 'girls')))
+      if (partnerIdx !== -1) {
+        used.add(partnerIdx)
+        const partner = evts[partnerIdx]
+        const girls = e.gender === 'girls' ? e : partner
+        const boys = e.gender === 'boys' ? e : partner
+        rows.push({ type: 'event', girls: girls.event_number, boys: boys.event_number, name: e.event_name, format: e.format, isRelay: e.stroke === 'relay' })
+      } else {
+        rows.push({ type: 'event', girls: e.gender === 'girls' ? e.event_number : '', boys: e.gender === 'boys' ? e.event_number : '', name: e.event_name, format: e.format, isRelay: e.stroke === 'relay' })
+      }
+    })
+    return rows
+  }
 
   const renderSession = (day, session, title) => {
     const evts = dayEvents(day, session)
     if (evts.length === 0) return null
-
-    // Group consecutive events by event_number for girls/boys pairing
-    const rows = []
-    let i = 0
-    while (i < evts.length) {
-      const e = evts[i]
-      if (e.is_break) {
-        rows.push({ type: 'break', label: e.break_label })
-        i++
-      } else if (e.gender === 'mixed') {
-        rows.push({ type: 'event', girls: e.event_number, boys: '—', name: e.event_name, format: e.format, isRelay: e.stroke === 'relay' })
-        i++
-      } else if (e.gender === 'girls' && i + 1 < evts.length && evts[i+1].gender === 'boys' && evts[i+1].event_number === e.event_number + 1) {
-        rows.push({ type: 'event', girls: e.event_number, boys: evts[i+1].event_number, name: e.event_name, format: e.format, isRelay: e.stroke === 'relay' })
-        i += 2
-      } else {
-        rows.push({ type: 'event', girls: e.gender === 'girls' ? e.event_number : '', boys: e.gender === 'boys' ? e.event_number : '', name: e.event_name, format: e.format, isRelay: e.stroke === 'relay' })
-        i++
-      }
-    }
+    const rows = buildRows(evts)
 
     return (
       <div className="mb-8">
@@ -73,14 +87,25 @@ export default function Schedule() {
             </button>
           ))}
         </div>
-        {tab === 1 && <>
-          {renderSession(1, 'morning', '8 & Under Timed Finals + 11+ Prelims')}
-          {renderSession(1, 'evening', '11+ Finals')}
-        </>}
-        {tab === 2 && <>
-          {renderSession(2, 'morning', '9–10 Timed Finals + 11+ Prelims')}
-          {renderSession(2, 'evening', '11+ Finals + Closing Relays')}
-        </>}
+        {loading ? (
+          <div className="py-24 text-center text-sm text-gray-400 font-oswald tracking-widest uppercase">Loading event order…</div>
+        ) : events.length === 0 ? (
+          <div className="py-24 text-center text-sm text-gray-400">
+            <p className="font-oswald tracking-widest uppercase mb-2">No events scheduled yet</p>
+            <p className="text-xs">The event order for {currentSeason?.label || 'this season'} has not been published yet. Please check back soon.</p>
+          </div>
+        ) : (
+          <>
+            {tab === 1 && <>
+              {renderSession(1, 'morning', '8 & Under Timed Finals + 11+ Prelims')}
+              {renderSession(1, 'evening', '11+ Finals')}
+            </>}
+            {tab === 2 && <>
+              {renderSession(2, 'morning', '9–10 Timed Finals + 11+ Prelims')}
+              {renderSession(2, 'evening', '11+ Finals + Closing Relays')}
+            </>}
+          </>
+        )}
       </div>
     </>
   )

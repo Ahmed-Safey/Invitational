@@ -4,11 +4,14 @@ import { useSite } from '../../lib/SiteContext'
 import AdminLayout from '../../components/admin/AdminLayout'
 import toast from 'react-hot-toast'
 
+const CORE_MEDIA_SLUGS = ['seis-logo','cac-logo','hero-photo','eagle-watermark','page-header-bg']
+
 export default function Media() {
   const { refetch } = useSite()
   const [mediaList, setMediaList] = useState([])
   const [adding, setAdding] = useState(false)
   const [newMedia, setNewMedia] = useState({ slug: '', label: '', google_drive_url: '', usage_hint: '', alt_text: '' })
+  const [failedIds, setFailedIds] = useState(new Set())
 
   const load = async () => {
     const { data } = await supabase.from('media').select('*').order('slug')
@@ -39,7 +42,7 @@ export default function Media() {
   }
 
   const deleteMedia = async (id, slug) => {
-    if (['seis-logo','cac-logo','hero-photo','eagle-watermark'].includes(slug)) return toast.error('Cannot delete core media slots')
+    if (CORE_MEDIA_SLUGS.includes(slug)) return toast.error('Cannot delete core media slots')
     if (!confirm('Delete this media slot?')) return
     await supabase.from('media').delete().eq('id', id)
     toast.success('Deleted'); load(); refetch()
@@ -72,14 +75,19 @@ export default function Media() {
         {mediaList.map(m => (
           <div key={m.id} className="admin-card">
             <div className="flex items-start gap-4">
-              <div className="w-20 h-20 bg-gray-100 rounded flex items-center justify-center shrink-0 overflow-hidden">
-                {m.google_drive_url ? <img src={m.google_drive_url} alt="" className="w-full h-full object-cover" onError={e => e.target.style.display='none'} /> : <span className="text-gray-400 text-2xl">🖼</span>}
+              <div className="w-20 h-20 bg-gray-100 rounded flex items-center justify-center shrink-0 overflow-hidden relative">
+                {m.google_drive_url
+                  ? <img src={m.google_drive_url} alt="" className="w-full h-full object-cover" onLoad={() => setFailedIds(prev => { const n = new Set(prev); n.delete(m.id); return n })} onError={e => { e.target.style.visibility='hidden'; setFailedIds(prev => new Set(prev).add(m.id)) }} />
+                  : <span className="text-gray-400 text-2xl">🖼</span>}
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="font-bold text-gray-900">{m.label}</span>
                   <span className="text-xs text-gray-400 font-mono">{m.slug}</span>
-                  <button onClick={() => deleteMedia(m.id, m.slug)} className="text-xs text-red-400 hover:text-red-600 ml-auto cursor-pointer bg-transparent border-none">Delete</button>
+                  {failedIds.has(m.id) && m.google_drive_url && (
+                    <span title="Image failed to load. Ensure the Google Drive file is set to 'Anyone with the link can view'." className="text-xs px-1.5 py-0.5 bg-red-100 text-red-700 rounded font-medium">⚠ Preview failed</span>
+                  )}
+                  {!CORE_MEDIA_SLUGS.includes(m.slug) && <button onClick={() => deleteMedia(m.id, m.slug)} className="text-xs text-red-400 hover:text-red-600 ml-auto cursor-pointer bg-transparent border-none">Delete</button>}
                 </div>
                 <p className="text-xs text-gray-400 mb-2">Used in: {m.usage_hint}</p>
                 <input value={m.google_drive_url || ''} onChange={e => setMediaList(mediaList.map(x => x.id === m.id ? {...x, google_drive_url: e.target.value} : x))} placeholder="Paste Google Drive sharing link..." className="admin-input mb-2" />

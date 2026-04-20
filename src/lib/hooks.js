@@ -35,7 +35,7 @@ export function useContent(pageSlug) {
   return { blocks, loading }
 }
 
-export function useEvents(day, session) {
+export function useEvents(day, session, seasonSlug) {
   const [events, setEvents] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -45,6 +45,7 @@ export function useEvents(day, session) {
     let query = supabase.from('events').select('*').order('day').order('sort_order')
     if (day) query = query.eq('day', day)
     if (session) query = query.eq('session', session)
+    if (seasonSlug) query = query.eq('season_slug', seasonSlug)
     query.then(({ data, error }) => {
       if (cancelled) return
       if (error) console.error('useEvents:', error)
@@ -52,7 +53,7 @@ export function useEvents(day, session) {
       setLoading(false)
     })
     return () => { cancelled = true }
-  }, [day, session])
+  }, [day, session, seasonSlug])
 
   return { events, loading }
 }

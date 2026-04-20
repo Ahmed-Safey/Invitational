@@ -1,10 +1,33 @@
-import { Navigate } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../lib/AuthContext'
 import AdminNav from './AdminNav'
 import Loading from '../public/Loading'
 
+const TITLE_MAP = {
+  '/admin': 'Dashboard',
+  '/admin/settings': 'Settings',
+  '/admin/seasons': 'Seasons',
+  '/admin/pages': 'Pages',
+  '/admin/content': 'Content',
+  '/admin/events': 'Events',
+  '/admin/scoring': 'Scoring',
+  '/admin/media': 'Media',
+  '/admin/programs': 'Programs',
+  '/admin/fees': 'Fees',
+  '/admin/integrations': 'Integrations',
+  '/admin/login': 'Admin Login',
+}
+
 export default function AdminLayout({ children }) {
   const { user, loading } = useAuth()
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    const label = TITLE_MAP[pathname] || 'Admin'
+    document.title = `${label} · Admin | SEIS`
+  }, [pathname])
+
   if (loading) return <Loading />
   if (!user) return <Navigate to="/admin/login" replace />
 

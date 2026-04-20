@@ -29,7 +29,7 @@ function FormatCard({ title, items }) {
 export default function Home() {
   const { settings, seasons, currentSeason, getMediaUrl } = useSite()
   const { blocks: b } = useContent('home')
-  const { events } = useEvents()
+  const { events } = useEvents(null, null, currentSeason?.slug)
   const heroUrl = driveUrl(getMediaUrl('hero-photo'))
   const logoUrl = driveUrl(getMediaUrl('seis-logo'), 600)
   const eagleUrl = driveUrl(getMediaUrl('eagle-watermark'), 400)

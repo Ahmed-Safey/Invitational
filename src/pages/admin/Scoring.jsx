@@ -1,12 +1,9 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useSite } from '../../lib/SiteContext'
 import AdminLayout from '../../components/admin/AdminLayout'
 import toast from 'react-hot-toast'
 
 export default function Scoring() {
-  const { refetch } = useSite()
-
   const [scoring, setScoring] = useState([])
 
   const load = async () => {

@@ -1,11 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useSite } from '../../lib/SiteContext'
 import AdminLayout from '../../components/admin/AdminLayout'
 import toast from 'react-hot-toast'
 
 export default function ContentAdmin() {
-  const { refetch } = useSite()
   const [pageSlug, setPageSlug] = useState('')
   const [blocks, setBlocks] = useState([])
   const [allPages, setAllPages] = useState([])
@@ -16,12 +14,12 @@ export default function ContentAdmin() {
     supabase.from('pages').select('slug, title').order('nav_order').then(({ data }) => setAllPages(data || []))
   }, [])
 
-  const loadBlocks = async () => {
+  const loadBlocks = useCallback(async () => {
     if (!pageSlug) return
     const { data } = await supabase.from('content_blocks').select('*').eq('page_slug', pageSlug).order('sort_order')
     setBlocks(data || [])
-  }
-  useEffect(() => { loadBlocks() }, [pageSlug])
+  }, [pageSlug])
+  useEffect(() => { loadBlocks() }, [loadBlocks])
 
   const validateJson = (content, type) => {
     if (!['json', 'table', 'list'].includes(type)) return true

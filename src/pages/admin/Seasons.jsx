@@ -20,13 +20,9 @@ export default function Seasons() {
 
   const setActive = async (slug) => {
     setSaving(true)
-    const current = seasons.find(s => s.is_current)
-    if (current) {
-      await supabase.from('seasons').update({ is_current: false }).eq('id', current.id)
-    }
-    await supabase.from('seasons').update({ is_current: true }).eq('slug', slug)
-    await supabase.from('site_settings').update({ active_season: slug }).eq('id', 1)
-    toast.success('Active season updated'); load(); refetch()
+    const { error } = await supabase.rpc('set_active_season', { new_slug: slug })
+    if (error) toast.error(error.message)
+    else { toast.success('Active season updated'); load(); refetch() }
     setSaving(false)
   }
 
@@ -47,6 +43,10 @@ export default function Seasons() {
   }
 
   const addSeason = async () => {
+    if (!/^[a-z0-9_]+$/.test(newSeason.slug)) {
+      return toast.error('Slug must be lowercase letters, digits, and underscores only (e.g. fall_2027)')
+    }
+    if (!newSeason.label.trim()) return toast.error('Label is required')
     setSaving(true)
     const { error } = await supabase.from('seasons').insert({ ...newSeason, is_current: false })
     if (error) { toast.error(error.message); setSaving(false); return }
