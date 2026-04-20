@@ -22,24 +22,28 @@ export default function Fees() {
         <div className="divider" />
         <p className="text-sm text-gray-500 mb-6">{blocks.fees_intro}</p>
 
-        {bank && (
+        {bank?.is_published && bank.bank_name && (
           <div className="info-card mb-8">
             <h3>Bank Transfer Details</h3>
             <table className="w-full text-sm">
               <tbody>
-                {[['Bank Name', bank.bank_name],['Account Name', bank.account_name],['Account Number', bank.account_number],['SWIFT / IBAN', bank.swift_iban],['Reference', bank.reference_format]].map(([k,v]) => (
-                  <tr key={k} className="border-b border-cream-mid"><td className="py-2 font-bold text-charcoal">{k}</td><td className="py-2 text-gray-500">{v}</td></tr>
+                {[['Bank Name', bank.bank_name],['Account Name', bank.account_name],['Account Number', bank.account_number],['SWIFT / IBAN', bank.swift_iban],['Reference', bank.reference_format]]
+                  .filter(([, v]) => v && v.trim() && v.toUpperCase() !== 'TBC' && v.toUpperCase() !== 'TBD')
+                  .map(([k,v]) => (
+                    <tr key={k} className="border-b border-cream-mid"><td className="py-2 font-bold text-charcoal">{k}</td><td className="py-2 text-gray-500">{v}</td></tr>
                 ))}
               </tbody>
             </table>
           </div>
         )}
 
-        <h2 className="section-title">School <span className="text-crimson">Invoices</span></h2>
-        <div className="divider" />
-        <div className="bg-cream-mid border-2 border-dashed border-crimson/20 p-8 text-center rounded mb-8">
-          <p className="font-oswald text-sm tracking-widest uppercase text-gray-400">{blocks.invoices_placeholder || 'Invoices will be posted here once registrations are confirmed.'}</p>
-        </div>
+        {blocks.invoices_html && (
+          <>
+            <h2 className="section-title">School <span className="text-crimson">Invoices</span></h2>
+            <div className="divider" />
+            <div className="mb-8 text-sm text-gray-500" dangerouslySetInnerHTML={{ __html: blocks.invoices_html }} />
+          </>
+        )}
 
         <h2 className="section-title">Payment <span className="text-crimson">Policy</span></h2>
         <div className="divider" />

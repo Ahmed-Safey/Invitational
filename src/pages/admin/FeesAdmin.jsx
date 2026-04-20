@@ -24,7 +24,16 @@ export default function FeesAdmin() {
     supabase.from('bank_details').select('*').single().then(({ data }) => { if (data) setBank(data) })
   }, [])
 
+  const REQUIRED = ['bank_name','account_name','account_number','swift_iban','reference_format']
+  const incomplete = REQUIRED.filter(k => {
+    const v = (bank[k] || '').trim()
+    return !v || v.toUpperCase() === 'TBC' || v.toUpperCase() === 'TBD'
+  })
+
   const save = async () => {
+    if (bank.is_published && incomplete.length > 0) {
+      return toast.error(`Fill all bank fields before publishing. Missing: ${incomplete.join(', ')}`)
+    }
     setSaving(true)
     const updates = {
       bank_name: bank.bank_name,
@@ -55,6 +64,11 @@ export default function FeesAdmin() {
           <input type="checkbox" checked={bank.is_published || false} onChange={e => setBank({...bank, is_published: e.target.checked})} />
           Show bank details on public site
         </label>
+        {incomplete.length > 0 && (
+          <p className="text-xs text-red-600 mt-2 bg-red-50 border border-red-200 rounded px-2 py-1.5">
+            ⚠ Cannot publish yet — fill in: <strong>{incomplete.join(', ')}</strong>
+          </p>
+        )}
       </div>
       <button onClick={save} disabled={saving} className="admin-btn">{saving ? 'Saving...' : 'Save Bank Details'}</button>
     </div>

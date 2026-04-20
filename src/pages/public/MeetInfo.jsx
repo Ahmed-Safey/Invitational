@@ -52,7 +52,13 @@ export default function MeetInfo() {
         <h2 className="section-title">Entry <span className="text-crimson">Limits</span></h2>
         <div className="divider" />
         {b.entry_limits_table && <DataTable headers={['Category','Limit']} keys={['category','limit']} rows={b.entry_limits_table} />}
-        <p className="text-sm text-gray-500 mb-8 whitespace-pre-wrap">{b.entry_policy_text}</p>
+        {Array.isArray(b.entry_policy_text) ? (
+          <ul className="list-disc list-inside space-y-2 text-sm text-gray-500 mb-8">
+            {b.entry_policy_text.map((item, i) => <li key={i}>{item}</li>)}
+          </ul>
+        ) : (
+          <p className="text-sm text-gray-500 mb-8 whitespace-pre-wrap">{b.entry_policy_text}</p>
+        )}
 
         <h2 className="section-title">Scoring & <span className="text-crimson">Awards</span></h2>
         <div className="divider" />

@@ -77,7 +77,7 @@ export default function Home() {
             ))}
           </div>
           <div className="flex gap-3 justify-center flex-wrap animate-fade-up-delay-4">
-            <Link to="/contact" className="btn-primary no-underline">Register Interest</Link>
+            <Link to="/contact" className="btn-primary no-underline">Secure Your School&apos;s Spot</Link>
             <Link to="/schedule" className="btn-outline no-underline">View Schedule</Link>
           </div>
         </div>

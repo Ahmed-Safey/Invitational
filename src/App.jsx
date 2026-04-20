@@ -18,6 +18,7 @@ import Results from './pages/public/Results'
 import Stream from './pages/public/Stream'
 import Contact from './pages/public/Contact'
 import Entries from './pages/public/Entries'
+import Faq from './pages/public/Faq'
 import NotFound from './pages/public/NotFound'
 
 // Admin pages
@@ -81,6 +82,7 @@ export default function App() {
           <Route path="/stream" element={<VisibleRoute slug="stream" element={<Stream />} />} />
           <Route path="/contact" element={<VisibleRoute slug="contact" element={<Contact />} />} />
           <Route path="/entries" element={<VisibleRoute slug="entries" element={<Entries />} />} />
+          <Route path="/faq" element={<VisibleRoute slug="faq" element={<Faq />} />} />
 
           {/* Admin */}
           <Route path="/admin/login" element={<Login />} />
