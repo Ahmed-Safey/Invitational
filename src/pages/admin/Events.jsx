@@ -12,7 +12,7 @@ function EventForm({ evt, onSave, onCancel, saving }) {
   const [f, setF] = useState(evt)
   return (
     <tr className="bg-blue-50">
-      <td className="p-2"><input type="number" value={f.event_number} onChange={e => setF({...f, event_number: parseInt(e.target.value) || 0})} className="admin-input w-16" /></td>
+      <td className="p-2"><input type="number" inputMode="numeric" value={f.event_number} onChange={e => setF({...f, event_number: parseInt(e.target.value) || 0})} className="admin-input w-16" /></td>
       <td className="p-2">
         <select value={f.gender} onChange={e => setF({...f, gender: e.target.value})} className="admin-input w-20">
           <option value="girls">Girls</option><option value="boys">Boys</option><option value="mixed">Mixed</option>
@@ -25,7 +25,7 @@ function EventForm({ evt, onSave, onCancel, saving }) {
           <input value={f.event_name} onChange={e => setF({...f, event_name: e.target.value})} className="admin-input" />
         )}
       </td>
-      <td className="p-2"><input type="number" value={f.distance || ''} onChange={e => setF({...f, distance: e.target.value ? parseInt(e.target.value) : null})} placeholder="—" className="admin-input w-16" /></td>
+      <td className="p-2"><input type="number" inputMode="numeric" value={f.distance || ''} onChange={e => setF({...f, distance: e.target.value ? parseInt(e.target.value) : null})} placeholder="—" className="admin-input w-16" /></td>
       <td className="p-2">
         <select value={f.stroke || ''} onChange={e => setF({...f, stroke: e.target.value || null})} className="admin-input w-24">
           <option value="">—</option><option value="freestyle">Free</option><option value="backstroke">Back</option><option value="breaststroke">Breast</option><option value="butterfly">Fly</option><option value="im">IM</option><option value="relay">Relay</option>
@@ -35,7 +35,7 @@ function EventForm({ evt, onSave, onCancel, saving }) {
       <td className="p-2"><select value={f.format} onChange={e => setF({...f, format: e.target.value})} className="admin-input w-28"><option value="timed_final">Timed Final</option><option value="prelims">Prelims</option><option value="finals">Finals</option></select></td>
       <td className="p-2"><select value={f.day} onChange={e => setF({...f, day: parseInt(e.target.value)})} className="admin-input w-14"><option value={1}>1</option><option value={2}>2</option></select></td>
       <td className="p-2"><select value={f.session} onChange={e => setF({...f, session: e.target.value})} className="admin-input w-24"><option value="morning">AM</option><option value="evening">PM</option></select></td>
-      <td className="p-2"><input type="number" value={f.sort_order} onChange={e => setF({...f, sort_order: parseInt(e.target.value) || 0})} className="admin-input w-16" /></td>
+      <td className="p-2"><input type="number" inputMode="numeric" value={f.sort_order} onChange={e => setF({...f, sort_order: parseInt(e.target.value) || 0})} className="admin-input w-16" /></td>
       <td className="p-2">
         <div className="flex gap-1">
           <button onClick={() => onSave(f)} disabled={saving} className="admin-btn text-xs">{saving ? '...' : 'Save'}</button>

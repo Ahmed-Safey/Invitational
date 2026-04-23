@@ -28,8 +28,8 @@ export default function Scoring() {
           {scoring.map(s => (
             <tr key={s.id}>
               <td className="font-bold">{s.place}</td>
-              <td><input type="number" value={s.individual_points} onChange={e => setScoring(scoring.map(x => x.id === s.id ? {...x, individual_points: parseInt(e.target.value) || 0} : x))} className="admin-input w-20" /></td>
-              <td><input type="number" value={s.relay_points} onChange={e => setScoring(scoring.map(x => x.id === s.id ? {...x, relay_points: parseInt(e.target.value) || 0} : x))} className="admin-input w-20" /></td>
+              <td><input type="number" inputMode="numeric" value={s.individual_points} onChange={e => setScoring(scoring.map(x => x.id === s.id ? {...x, individual_points: parseInt(e.target.value) || 0} : x))} className="admin-input w-20" /></td>
+              <td><input type="number" inputMode="numeric" value={s.relay_points} onChange={e => setScoring(scoring.map(x => x.id === s.id ? {...x, relay_points: parseInt(e.target.value) || 0} : x))} className="admin-input w-20" /></td>
               <td><button onClick={() => save(s)} className="admin-btn text-xs">Save</button></td>
             </tr>
           ))}

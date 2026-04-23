@@ -22,7 +22,7 @@ export default function Footer() {
   return (
     <footer className="bg-[#0a0a0a] border-t-2 border-crimson py-10 px-6 text-center">
       <div className="max-w-[900px] mx-auto">
-        {cacLogo && <img src={cacLogo} alt="CAC" className="h-12 mx-auto mb-4 opacity-60" />}
+        {cacLogo && <img src={cacLogo} alt="CAC" className="h-12 mx-auto mb-4 opacity-60" loading="lazy" decoding="async" />}
         <p className="text-sm text-gray-500 tracking-wide mb-1">{settings?.site_title || 'Swimming Eagles Invitational Series'}</p>
         <p className="text-xs text-gray-600 mb-4">&copy; {year} Cairo American College &mdash; Aquatics Department. All rights reserved.</p>
         {footerLinks.length > 0 && (

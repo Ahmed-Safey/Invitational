@@ -80,3 +80,15 @@
 .animate-fade-up-delay-2 { animation: fadeUp 0.8s 0.25s ease both; }
 .animate-fade-up-delay-3 { animation: fadeUp 0.8s 0.4s ease both; }
 .animate-fade-up-delay-4 { animation: fadeUp 0.8s 0.55s ease both; }
+
+/* Respect users who've asked their OS to reduce motion (accessibility,
+   vestibular disorders, battery saving). Kills all non-essential
+   transitions and animations site-wide. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

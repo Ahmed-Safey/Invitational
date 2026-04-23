@@ -47,7 +47,7 @@ export default function Navbar() {
       </ul>
 
       {/* Hamburger */}
-      <button onClick={() => setOpen(!open)} className="lg:hidden flex flex-col gap-[5px] p-1.5 bg-transparent border-none cursor-pointer" aria-label="Menu" aria-expanded={open} aria-controls="mobile-menu">
+      <button onClick={() => setOpen(!open)} className="lg:hidden flex flex-col justify-center items-center gap-[5px] w-11 h-11 bg-transparent border-none cursor-pointer" aria-label="Menu" aria-expanded={open} aria-controls="mobile-menu">
         <span className={`block w-6 h-0.5 bg-gray-400 rounded transition-all ${open ? 'translate-y-[7px] rotate-45' : ''}`} />
         <span className={`block w-6 h-0.5 bg-gray-400 rounded transition-all ${open ? 'opacity-0' : ''}`} />
         <span className={`block w-6 h-0.5 bg-gray-400 rounded transition-all ${open ? '-translate-y-[7px] -rotate-45' : ''}`} />

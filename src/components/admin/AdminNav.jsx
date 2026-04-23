@@ -27,7 +27,7 @@ export default function AdminNav() {
       {/* Mobile header */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-gray-900 border-b border-white/10 px-4 py-3 flex items-center justify-between">
         <Link to="/" className="text-white no-underline font-bold text-sm tracking-wider">SEIS Admin</Link>
-        <button onClick={() => setMobileOpen(!mobileOpen)} className="text-gray-400 bg-transparent border-none cursor-pointer text-xl" aria-label="Toggle menu" aria-expanded={mobileOpen} aria-controls="admin-sidebar">
+        <button onClick={() => setMobileOpen(!mobileOpen)} className="text-gray-400 bg-transparent border-none cursor-pointer text-xl w-11 h-11 flex items-center justify-center" aria-label="Toggle menu" aria-expanded={mobileOpen} aria-controls="admin-sidebar">
           {mobileOpen ? '✕' : '☰'}
         </button>
       </div>

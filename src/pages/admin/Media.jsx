@@ -77,7 +77,7 @@ export default function Media() {
             <div className="flex items-start gap-4">
               <div className="w-20 h-20 bg-gray-100 rounded flex items-center justify-center shrink-0 overflow-hidden relative">
                 {m.google_drive_url
-                  ? <img src={m.google_drive_url} alt="" className="w-full h-full object-cover" onLoad={() => setFailedIds(prev => { const n = new Set(prev); n.delete(m.id); return n })} onError={e => { e.target.style.visibility='hidden'; setFailedIds(prev => new Set(prev).add(m.id)) }} />
+                  ? <img src={m.google_drive_url} alt="" className="w-full h-full object-cover" loading="lazy" decoding="async" onLoad={() => setFailedIds(prev => { const n = new Set(prev); n.delete(m.id); return n })} onError={e => { e.target.style.visibility='hidden'; setFailedIds(prev => new Set(prev).add(m.id)) }} />
                   : <span className="text-gray-400 text-2xl">🖼</span>}
               </div>
               <div className="flex-1">
