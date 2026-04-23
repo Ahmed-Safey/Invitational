@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  This file is regenerated at build time by scripts/build-sitemap.mjs
+  which queries the Supabase `pages` table for rows with is_visible = true.
+  Checked-in version is just a dev fallback; the live sitemap served on
+  Vercel always reflects current page visibility.
+-->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
   <url><loc>/meet-info</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>/schedule</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>/sessions</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>/warmup</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>/entries</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>/programs</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>/fees</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>/results</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
-  <url><loc>/stream</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>/contact</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>/faq</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>/contact</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>

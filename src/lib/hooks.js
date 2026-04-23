@@ -99,7 +99,10 @@ export function useBankDetails() {
   const [bank, setBank] = useState(null)
   useEffect(() => {
     let cancelled = false
-    supabase.from('bank_details').select('*').maybeSingle().then(({ data, error }) => {
+    // Defense in depth: RLS already restricts anon reads to `is_published = true`,
+    // but filtering client-side too means a future RLS loosening won't silently
+    // leak draft bank details.
+    supabase.from('bank_details').select('*').eq('is_published', true).maybeSingle().then(({ data, error }) => {
       if (cancelled) return
       if (error) console.error('useBankDetails:', error)
       setBank(data)

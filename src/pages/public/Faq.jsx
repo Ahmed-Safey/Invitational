@@ -40,12 +40,14 @@ export default function Faq() {
                     onClick={() => setOpenIdx(isOpen ? -1 : i)}
                     className="w-full text-left py-4 px-5 flex items-start justify-between gap-4 cursor-pointer bg-transparent border-none hover:bg-cream transition-colors"
                     aria-expanded={isOpen}
+                    aria-controls={`faq-panel-${i}`}
+                    id={`faq-button-${i}`}
                   >
                     <span className="font-oswald font-semibold text-base text-charcoal tracking-wide">{item.q}</span>
-                    <span className={`font-oswald text-2xl text-crimson leading-none transition-transform shrink-0 ${isOpen ? 'rotate-45' : ''}`}>+</span>
+                    <span aria-hidden="true" className={`font-oswald text-2xl text-crimson leading-none transition-transform shrink-0 ${isOpen ? 'rotate-45' : ''}`}>+</span>
                   </button>
                   {isOpen && (
-                    <div className="px-5 pb-5 pt-1 text-sm text-gray-500 leading-relaxed whitespace-pre-wrap">{item.a}</div>
+                    <div id={`faq-panel-${i}`} role="region" aria-labelledby={`faq-button-${i}`} className="px-5 pb-5 pt-1 text-sm text-gray-500 leading-relaxed whitespace-pre-wrap">{item.a}</div>
                   )}
                 </div>
               )

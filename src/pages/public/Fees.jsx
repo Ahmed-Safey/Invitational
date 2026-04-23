@@ -2,6 +2,7 @@ import PageHeader from '../../components/public/PageHeader'
 import Breadcrumb from '../../components/public/Breadcrumb'
 import { useContent, useBankDetails } from '../../lib/hooks'
 import { useSite } from '../../lib/SiteContext'
+import { sanitizeHtml } from '../../lib/sanitize'
 
 export default function Fees() {
   const { settings } = useSite()
@@ -41,7 +42,7 @@ export default function Fees() {
           <>
             <h2 className="section-title">School <span className="text-crimson">Invoices</span></h2>
             <div className="divider" />
-            <div className="mb-8 text-sm text-gray-500" dangerouslySetInnerHTML={{ __html: blocks.invoices_html }} />
+            <div className="mb-8 text-sm text-gray-500" dangerouslySetInnerHTML={{ __html: sanitizeHtml(blocks.invoices_html) }} />
           </>
         )}
 

@@ -20,7 +20,7 @@ const TITLE_MAP = {
 }
 
 export default function AdminLayout({ children }) {
-  const { user, loading } = useAuth()
+  const { user, isAdmin, loading, signOut } = useAuth()
   const { pathname } = useLocation()
 
   useEffect(() => {
@@ -30,6 +30,13 @@ export default function AdminLayout({ children }) {
 
   if (loading) return <Loading />
   if (!user) return <Navigate to="/admin/login" replace />
+  // Defense-in-depth: a signed-in user who isn't on the admins allow-list gets
+  // kicked out of the admin shell instead of seeing an empty (RLS-blocked)
+  // dashboard. Sign them out so they stop appearing authenticated elsewhere.
+  if (!isAdmin) {
+    signOut()
+    return <Navigate to="/admin/login" replace />
+  }
 
   return (
     <div className="flex min-h-screen">

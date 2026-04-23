@@ -89,9 +89,14 @@ export default function Schedule() {
       <PageHeader slug="schedule" label="Event Program" titleHtml='Schedule of <span class="text-gold">Events</span>' />
       <Breadcrumb page="Schedule of Events" />
       <div className="max-w-[900px] mx-auto py-16 px-8">
-        <div className="flex gap-0 border-b-2 border-cream-mid mb-8">
+        <div role="tablist" aria-label="Day selector" className="flex gap-0 border-b-2 border-cream-mid mb-8">
           {[{ d:1, label:d1Label },{ d:2, label:d2Label }].map(t => (
             <button key={t.d} onClick={() => setTab(t.d)}
+              role="tab"
+              id={`schedule-tab-${t.d}`}
+              aria-selected={tab === t.d}
+              aria-controls={`schedule-panel-${t.d}`}
+              tabIndex={tab === t.d ? 0 : -1}
               className={`font-oswald text-sm font-semibold tracking-widest uppercase px-6 py-3 border-b-[3px] -mb-[2px] transition-colors cursor-pointer bg-transparent ${tab === t.d ? 'text-crimson border-crimson' : 'text-gray-400 border-transparent hover:text-charcoal'}`}>
               {t.label}
             </button>
@@ -106,14 +111,18 @@ export default function Schedule() {
           </div>
         ) : (
           <>
-            {tab === 1 && <>
-              {renderSession(1, 'morning', d1mTitle)}
-              {renderSession(1, 'evening', d1eTitle)}
-            </>}
-            {tab === 2 && <>
-              {renderSession(2, 'morning', d2mTitle)}
-              {renderSession(2, 'evening', d2eTitle)}
-            </>}
+            {tab === 1 && (
+              <div role="tabpanel" id="schedule-panel-1" aria-labelledby="schedule-tab-1">
+                {renderSession(1, 'morning', d1mTitle)}
+                {renderSession(1, 'evening', d1eTitle)}
+              </div>
+            )}
+            {tab === 2 && (
+              <div role="tabpanel" id="schedule-panel-2" aria-labelledby="schedule-tab-2">
+                {renderSession(2, 'morning', d2mTitle)}
+                {renderSession(2, 'evening', d2eTitle)}
+              </div>
+            )}
           </>
         )}
       </div>

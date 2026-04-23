@@ -5,15 +5,33 @@ const AuthContext = createContext({})
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [loading, setLoading] = useState(true)
 
+  // Verify the signed-in user is on the admins allow-list via a server-side RPC
+  // (`is_current_user_admin()` wraps `is_admin()`). RLS already blocks their
+  // data reads/writes, but this lets the UI redirect them out of `/admin/*`
+  // instead of showing an empty shell.
+  const verifyAdmin = async (session) => {
+    if (!session?.user) { setIsAdmin(false); return }
+    const { data, error } = await supabase.rpc('is_current_user_admin')
+    if (error) {
+      console.warn('is_current_user_admin RPC failed:', error.message)
+      setIsAdmin(false)
+    } else {
+      setIsAdmin(!!data)
+    }
+  }
+
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setUser(session?.user ?? null)
+      await verifyAdmin(session)
       setLoading(false)
     })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_e, session) => {
       setUser(session?.user ?? null)
+      await verifyAdmin(session)
     })
     return () => subscription.unsubscribe()
   }, [])
@@ -26,10 +44,11 @@ export function AuthProvider({ children }) {
   const signOut = async () => {
     await supabase.auth.signOut()
     setUser(null)
+    setIsAdmin(false)
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, isAdmin, loading, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   )
