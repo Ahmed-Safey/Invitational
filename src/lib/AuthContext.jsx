@@ -5,7 +5,11 @@ const AuthContext = createContext({})
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
-  const [isAdmin, setIsAdmin] = useState(false)
+  // `null` = "haven't checked yet". We cannot default to `false` because
+  // AdminLayout would then redirect signed-in admins to the login page
+  // during the brief window before the RPC resolves — which caused a
+  // render-loop + Chrome's navigation throttle on the admin dashboard.
+  const [isAdmin, setIsAdmin] = useState(null)
   const [loading, setLoading] = useState(true)
 
   // Verify the signed-in user is on the admins allow-list via a server-side RPC
@@ -31,6 +35,9 @@ export function AuthProvider({ children }) {
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_e, session) => {
       setUser(session?.user ?? null)
+      // Reset to "unknown" while re-verifying so AdminLayout keeps showing
+      // the loading state instead of flashing the login redirect.
+      setIsAdmin(null)
       await verifyAdmin(session)
     })
     return () => subscription.unsubscribe()

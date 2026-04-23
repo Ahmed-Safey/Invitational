@@ -30,10 +30,10 @@ export default function Login() {
         </div>
         <div className="bg-white rounded-lg p-8 shadow-xl">
           <form onSubmit={handleSubmit}>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="admin-input mb-4" required />
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="admin-input mb-6" required />
+            <label htmlFor="admin-email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <input id="admin-email" name="email" type="email" autoComplete="username" value={email} onChange={e => setEmail(e.target.value)} className="admin-input mb-4" required />
+            <label htmlFor="admin-password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <input id="admin-password" name="password" type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} className="admin-input mb-6" required />
             {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
             <button type="submit" disabled={loading} className="admin-btn w-full">{loading ? 'Signing in...' : 'Sign In'}</button>
           </form>

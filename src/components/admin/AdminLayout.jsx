@@ -28,15 +28,20 @@ export default function AdminLayout({ children }) {
     document.title = `${label} · Admin | SEIS`
   }, [pathname])
 
+  // Defense-in-depth: sign out users who are authenticated but NOT on the
+  // admins allow-list. Run this in an effect — calling signOut during render
+  // would trigger a state update mid-render and caused a redirect-loop
+  // (Chrome throttled navigation + gotrue lock warnings).
+  useEffect(() => {
+    if (user && isAdmin === false) signOut()
+  }, [user, isAdmin, signOut])
+
   if (loading) return <Loading />
   if (!user) return <Navigate to="/admin/login" replace />
-  // Defense-in-depth: a signed-in user who isn't on the admins allow-list gets
-  // kicked out of the admin shell instead of seeing an empty (RLS-blocked)
-  // dashboard. Sign them out so they stop appearing authenticated elsewhere.
-  if (!isAdmin) {
-    signOut()
-    return <Navigate to="/admin/login" replace />
-  }
+  // isAdmin === null means the RPC hasn't resolved yet — keep showing the
+  // loading state instead of bouncing to /admin/login.
+  if (isAdmin === null) return <Loading />
+  if (isAdmin === false) return <Navigate to="/admin/login" replace />
 
   return (
     <div className="flex min-h-screen">
