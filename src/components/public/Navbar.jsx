@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useSite } from '../../lib/SiteContext'
-import { driveUrl } from '../../lib/hooks'
+import { driveUrl, onImgError } from '../../lib/hooks'
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
@@ -21,7 +21,7 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-black/[0.97] backdrop-blur-sm border-b-2 border-crimson flex items-center justify-between px-2 md:px-6 h-[68px]">
       <Link to="/" className="flex items-center gap-3 no-underline shrink-0">
-        {logoUrl && <img src={logoUrl} alt="SEIS" className="h-[58px]" />}
+        {logoUrl && <img src={logoUrl} alt="SEIS" className="h-[58px]" data-fallback="seis-logo" onError={onImgError} />}
         <span className="font-oswald font-semibold text-sm text-white tracking-widest uppercase border-l-2 border-crimson pl-3 hidden sm:block">
           Swimming Eagles<br/>Invitational Series
         </span>

@@ -29,14 +29,10 @@ export default function AdminLayout({ children }) {
   }, [pathname])
 
   // Defense-in-depth: sign out users who are authenticated but NOT on the
-  // admins allow-list. Debounce by 600ms so a transient null→false→true
-  // flicker during token refresh or rapid navigation doesn't trigger a
-  // premature logout. If isAdmin stays false for 600ms, it's real.
+  // admins allow-list. isAdmin === null (loading) is handled by the spinner
+  // below, so by the time isAdmin is false it's a confirmed non-admin.
   useEffect(() => {
-    if (user && isAdmin === false) {
-      const id = setTimeout(() => signOut(), 600)
-      return () => clearTimeout(id)
-    }
+    if (user && isAdmin === false) signOut()
   }, [user, isAdmin, signOut])
 
   if (loading) return <Loading />

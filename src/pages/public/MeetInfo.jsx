@@ -19,7 +19,7 @@ function DataTable({ headers, keys, rows }) {
 }
 
 export default function MeetInfo() {
-  const { settings, seasons } = useSite()
+  const { settings, seasons, currentSeason } = useSite()
   const { blocks: b, loading } = useContent('meet-info')
   const { blocks: contactBlocks } = useContent('contact')
   const { scoring } = useScoring()
@@ -68,6 +68,13 @@ export default function MeetInfo() {
         <h2 className="section-title">Age Group <span className="text-crimson">Structure</span></h2>
         <div className="divider" />
         <p className="text-sm text-gray-500 mb-4">{b.age_groups_text}</p>
+        {currentSeason?.age_up_date && (
+          <div className="bg-cream-mid border-l-4 border-l-crimson p-4 mb-6 text-sm">
+            <strong className="text-charcoal">Age-up date for {currentSeason.label}:</strong>{' '}
+            <span className="text-crimson font-semibold">{currentSeason.age_up_date}</span>
+            <p className="text-gray-500 text-xs mt-1">Swimmers compete in the age group they will reach on or before this date.</p>
+          </div>
+        )}
         {b.age_groups_table && <DataTable headers={['Age Group','Format','Day','Session']} keys={['group','format','day','session']} rows={b.age_groups_table} />}
         <p className="text-sm text-gray-500 mb-4">{b.mixed_relay_text}</p>
         <p className="text-sm text-gray-500 mb-4">{b.session_structure_text}</p>

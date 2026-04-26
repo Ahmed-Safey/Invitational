@@ -139,6 +139,27 @@ export function driveUrl(url, width = 1920) {
   return url
 }
 
+// Google Drive image fallback handler. Attach to <img onError={onImgError}>.
+// If the Drive thumbnail fails (rate limit, permission, network), swaps to a
+// local fallback in /fallbacks/{slug}.png. The slug is inferred from the alt
+// attribute or can be passed explicitly via data-fallback.
+const FALLBACK_MAP = {
+  'seis-logo': '/fallbacks/seis-logo.png',
+  'cac-swimming': '/fallbacks/cac-swimming.png',
+  'screaming-eagle': '/fallbacks/screaming-eagle.png',
+  'hero-photo': '/fallbacks/hero-photo.png',
+  'cac-logo': '/fallbacks/cac-logo.png',
+  'page-header-bg': '/fallbacks/hero-photo.png',
+}
+
+export function onImgError(e) {
+  const el = e.currentTarget
+  el.onerror = null // prevent infinite loop
+  const slug = el.dataset.fallback || el.alt?.toLowerCase().replace(/\s+/g, '-') || ''
+  const fallback = FALLBACK_MAP[slug]
+  if (fallback) el.src = fallback
+}
+
 // Admin helper: fetch all rows from a table
 export function useAdminTable(table, orderBy = 'id') {
   const [data, setData] = useState([])

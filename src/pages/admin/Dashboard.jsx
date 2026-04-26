@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useSite } from '../../lib/SiteContext'
+import { driveUrl } from '../../lib/hooks'
 import AdminLayout from '../../components/admin/AdminLayout'
 
 export default function Dashboard() {
   const { settings, currentSeason, pages, getMediaUrl, refetch } = useSite()
   const [stats, setStats] = useState({ events: 0, blocks: 0, media: 0 })
   const [exporting, setExporting] = useState(false)
+  const [driveHealth, setDriveHealth] = useState({}) // slug → true/false/null
 
   const exportBackup = async () => {
     setExporting(true)
@@ -65,6 +67,23 @@ export default function Dashboard() {
     })
   }, [])
 
+  // Drive image health check — renders hidden <img> per slug and listens for load/error
+  const checkDriveHealth = () => {
+    const slugs = ['seis-logo', 'cac-logo', 'cac-swimming', 'screaming-eagle', 'hero-photo']
+    const results = {}
+    slugs.forEach(slug => {
+      const rawUrl = getMediaUrl(slug)
+      if (!rawUrl) { results[slug] = false; setDriveHealth(prev => ({ ...prev, [slug]: false })); return }
+      const img = new Image()
+      img.onload = () => setDriveHealth(prev => ({ ...prev, [slug]: true }))
+      img.onerror = () => setDriveHealth(prev => ({ ...prev, [slug]: false }))
+      img.src = driveUrl(rawUrl, 100) // small thumbnail for speed
+    })
+  }
+
+  // Auto-check on mount
+  useEffect(() => { checkDriveHealth() }, [settings])
+
   const s = settings
 
   const StatusBadge = ({ active, label }) => (
@@ -112,12 +131,19 @@ export default function Dashboard() {
       </div>
 
       <div className="admin-card mb-8">
-        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Media Status</h3>
+        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Media Status &amp; Drive Health</h3>
         <div className="flex flex-wrap gap-3">
-          {['seis-logo', 'cac-logo', 'cac-swimming', 'screaming-eagle', 'hero-photo'].map(slug => (
-            <StatusBadge key={slug} active={!!getMediaUrl(slug)} label={slug} />
-          ))}
+          {['seis-logo', 'cac-logo', 'cac-swimming', 'screaming-eagle', 'hero-photo'].map(slug => {
+            const url = getMediaUrl(slug)
+            const health = driveHealth[slug]
+            const label = health === false ? `${slug} ⚠️` : slug
+            return <StatusBadge key={slug} active={!!url && health !== false} label={label} />
+          })}
         </div>
+        {Object.values(driveHealth).some(v => v === false) && (
+          <p className="text-xs text-red-600 mt-2">Some Drive images failed to load. Re-share them from Google Drive or check permissions.</p>
+        )}
+        <button onClick={checkDriveHealth} className="admin-btn-outline text-xs mt-3">Re-check Drive Images</button>
         <p className="text-xs text-gray-400 mt-2">Manage images in <Link to="/admin/media" className="text-crimson hover:underline">Media</Link></p>
       </div>
 

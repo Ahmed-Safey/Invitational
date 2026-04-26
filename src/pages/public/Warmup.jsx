@@ -5,6 +5,8 @@ import { useContent } from '../../lib/hooks'
 import Loading from '../../components/public/Loading'
 import { useSite } from '../../lib/SiteContext'
 
+// Warm-up timing source of truth: seasons.warmup_schedule_text
+// Competition start times are in meet_sessions.start_time (NOT warm-up times).
 export default function Warmup() {
   const { blocks } = useContent('warmup')
   const { currentSeason } = useSite()

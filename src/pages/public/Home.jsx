@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useSite } from '../../lib/SiteContext'
-import { useContent, useEvents, driveUrl } from '../../lib/hooks'
+import { useContent, useEvents, driveUrl, onImgError } from '../../lib/hooks'
 import SeasonToggle from '../../components/public/SeasonToggle'
 import PageTitle from '../../components/public/PageTitle'
 import Loading from '../../components/public/Loading'
@@ -70,13 +70,13 @@ export default function Home() {
         <div className="relative z-10">
           {/* Row 1: SEIS logo centred */}
           <div className="flex justify-center mb-4 animate-fade-up">
-            {logoUrl && <img src={logoUrl} alt="Swimming Eagles Invitational Series" className="w-full max-w-[340px] md:max-w-[400px]" />}
+            {logoUrl && <img src={logoUrl} alt="Swimming Eagles Invitational Series" className="w-full max-w-[340px] md:max-w-[400px]" data-fallback="seis-logo" onError={onImgError} />}
           </div>
           {/* Row 2: CAC Swimming + Screaming Eagle — equal size, side by side */}
           {(cacSwimUrl || eagleUrl) && (
             <div className="flex items-center justify-center gap-6 md:gap-10 mb-6 animate-fade-up">
-              {cacSwimUrl && <img src={cacSwimUrl} alt="CAC Swimming" className="h-36 md:h-56 w-auto object-contain" />}
-              {eagleUrl && <img src={eagleUrl} alt="Screaming Eagles" className="h-36 md:h-56 w-auto object-contain" />}
+              {cacSwimUrl && <img src={cacSwimUrl} alt="CAC Swimming" className="h-36 md:h-56 w-auto object-contain" data-fallback="cac-swimming" onError={onImgError} />}
+              {eagleUrl && <img src={eagleUrl} alt="Screaming Eagles" className="h-36 md:h-56 w-auto object-contain" data-fallback="screaming-eagle" onError={onImgError} />}
             </div>
           )}
           <h1 className="font-oswald font-bold text-5xl md:text-7xl text-white tracking-tight uppercase leading-[0.95] animate-fade-up-delay-1">
