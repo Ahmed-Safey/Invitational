@@ -35,7 +35,7 @@ export default function Home() {
   const { events } = useEvents(null, null, currentSeason?.slug)
   const heroUrl = driveUrl(getMediaUrl('hero-photo'))
   const logoUrl = driveUrl(getMediaUrl('seis-logo'), 600)
-  const cacSwimUrl = driveUrl(getMediaUrl('cac-logo'), 400)
+  const cacSwimUrl = driveUrl(getMediaUrl('cac-swimming'), 400)
   const eagleUrl = driveUrl(getMediaUrl('screaming-eagle'), 400)
 
   if (!settings) return <Loading />

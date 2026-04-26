@@ -75,7 +75,7 @@ export default function Dashboard() {
       <div className="admin-card mb-8">
         <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Media Status</h3>
         <div className="flex flex-wrap gap-3">
-          {['seis-logo', 'cac-logo', 'screaming-eagle', 'hero-photo'].map(slug => (
+          {['seis-logo', 'cac-logo', 'cac-swimming', 'screaming-eagle', 'hero-photo'].map(slug => (
             <StatusBadge key={slug} active={!!getMediaUrl(slug)} label={slug} />
           ))}
         </div>
