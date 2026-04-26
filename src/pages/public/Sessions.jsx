@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import PageHeader from '../../components/public/PageHeader'
 import Breadcrumb from '../../components/public/Breadcrumb'
-import { useContent } from '../../lib/hooks'
+import { useContent, useSessions } from '../../lib/hooks'
 import { useSite } from '../../lib/SiteContext'
 import SeasonToggle from '../../components/public/SeasonToggle'
 import Loading from '../../components/public/Loading'
@@ -47,13 +47,20 @@ function SessionTimes({ times }) {
 
 export default function Sessions() {
   const { currentSeason } = useSite()
-  const { blocks: b, loading } = useContent('sessions')
-  // Day labels come from the schedule page content_blocks so they stay in sync
-  // with the Schedule and Home pages when admins rename them.
+  const { blocks: b, loading: blocksLoading } = useContent('sessions')
   const { blocks: sched } = useContent('schedule')
+  const { sessions, loading: sessionsLoading } = useSessions(currentSeason?.slug)
   const times = currentSeason?.session_times_json
 
-  const SessionCard = ({ blockKey }) => {
+  const loading = blocksLoading || sessionsLoading
+
+  // Group sessions by day
+  const day1Sessions = sessions.filter(s => s.day === 1)
+  const day2Sessions = sessions.filter(s => s.day === 2)
+  const hasDbSessions = sessions.length > 0
+
+  // Legacy fallback: render from content blocks if no meet_sessions rows
+  const LegacySessionCard = ({ blockKey }) => {
     const title = b[blockKey + '_title']
     const desc = b[blockKey + '_desc']
     if (!title && !desc) return null
@@ -71,15 +78,35 @@ export default function Sessions() {
 
         <h2 className="section-title"><span className="text-crimson">{sched.day1_tab_label || 'Friday — Day 1'}</span></h2>
         <div className="divider" />
-        <SessionCard blockKey="fri_session_8u" />
-        <SessionCard blockKey="fri_session_1" />
-        <SessionCard blockKey="fri_session_2" />
+        {hasDbSessions ? (
+          day1Sessions.map(s => (
+            <div key={s.id} className="info-card mb-4">
+              <div className="flex items-baseline justify-between gap-2">
+                <h3>{s.title}</h3>
+                {s.start_time && <span className="font-oswald text-xs tracking-widest text-crimson">{s.start_time}</span>}
+              </div>
+              {s.description && <p className="text-sm text-gray-500">{s.description}</p>}
+            </div>
+          ))
+        ) : (
+          <><LegacySessionCard blockKey="fri_session_8u" /><LegacySessionCard blockKey="fri_session_1" /><LegacySessionCard blockKey="fri_session_2" /></>
+        )}
 
         <h2 className="section-title mt-12"><span className="text-crimson">{sched.day2_tab_label || 'Saturday — Day 2'}</span></h2>
         <div className="divider" />
-        <SessionCard blockKey="sat_session_1" />
-        <SessionCard blockKey="sat_session_2" />
-        <SessionCard blockKey="sat_session_3" />
+        {hasDbSessions ? (
+          day2Sessions.map(s => (
+            <div key={s.id} className="info-card mb-4">
+              <div className="flex items-baseline justify-between gap-2">
+                <h3>{s.title}</h3>
+                {s.start_time && <span className="font-oswald text-xs tracking-widest text-crimson">{s.start_time}</span>}
+              </div>
+              {s.description && <p className="text-sm text-gray-500">{s.description}</p>}
+            </div>
+          ))
+        ) : (
+          <><LegacySessionCard blockKey="sat_session_1" /><LegacySessionCard blockKey="sat_session_2" /><LegacySessionCard blockKey="sat_session_3" /></>
+        )}
 
         {times ? (
           <SessionTimes times={times} />

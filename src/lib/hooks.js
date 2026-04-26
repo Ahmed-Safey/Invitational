@@ -112,6 +112,25 @@ export function useBankDetails() {
   return bank
 }
 
+export function useSessions(seasonSlug) {
+  const [sessions, setSessions] = useState([])
+  const [loading, setLoading] = useState(true)
+  useEffect(() => {
+    if (!seasonSlug) { setLoading(false); return }
+    let cancelled = false
+    setLoading(true)
+    supabase.from('meet_sessions').select('*').eq('season_slug', seasonSlug).order('day').order('sort_order')
+      .then(({ data, error }) => {
+        if (cancelled) return
+        if (error) console.error('useSessions:', error)
+        setSessions(data || [])
+        setLoading(false)
+      })
+    return () => { cancelled = true }
+  }, [seasonSlug])
+  return { sessions, loading }
+}
+
 export function driveUrl(url, width = 1920) {
   if (!url) return null
   const match = url.match(/\/d\/([^/]+)/)

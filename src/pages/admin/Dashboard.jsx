@@ -12,12 +12,13 @@ export default function Dashboard() {
   const exportBackup = async () => {
     setExporting(true)
     try {
-      const [sRes, cbRes, seRes, mRes, evRes] = await Promise.all([
+      const [sRes, cbRes, seRes, mRes, evRes, msRes] = await Promise.all([
         supabase.from('site_settings').select('*').single(),
         supabase.from('content_blocks').select('*').order('page_slug,sort_order'),
         supabase.from('seasons').select('*').order('slug'),
         supabase.from('media').select('*').order('slug'),
         supabase.from('events').select('*').order('season_slug,day,session,sort_order'),
+        supabase.from('meet_sessions').select('*').order('season_slug,day,sort_order'),
       ])
       const backup = {
         exported_at: new Date().toISOString(),
@@ -26,6 +27,7 @@ export default function Dashboard() {
         seasons: seRes.data,
         media: mRes.data,
         events: evRes.data,
+        meet_sessions: msRes.data,
       }
       const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' })
       const url = URL.createObjectURL(blob)
