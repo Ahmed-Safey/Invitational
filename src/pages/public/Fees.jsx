@@ -56,7 +56,7 @@ export default function Fees() {
         <h2 className="section-title">Payment <span className="text-crimson">Policy</span></h2>
         <div className="divider" />
         <ul className="list-disc list-inside space-y-2 text-sm text-gray-500">
-          {['policy_1','policy_2','policy_3','policy_4'].map(k => blocks[k] && <li key={k}>{blocks[k]}</li>)}
+          {['policy_1','policy_2','policy_4'].map(k => blocks[k] && <li key={k}>{blocks[k]}</li>)}
         </ul>
       </div>
     </>
