@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import PageHeader from '../../components/public/PageHeader'
 import Breadcrumb from '../../components/public/Breadcrumb'
-import { useEvents, useContent } from '../../lib/hooks'
+import { useEvents, useContent, useSessions } from '../../lib/hooks'
 import { useSite } from '../../lib/SiteContext'
 
 export default function Schedule() {
@@ -9,6 +9,7 @@ export default function Schedule() {
   const { currentSeason } = useSite()
   const { events, loading } = useEvents(null, null, currentSeason?.slug)
   const { blocks } = useContent('schedule')
+  const { sessions: meetSessions } = useSessions(currentSeason?.slug)
 
   // Session titles are admin-editable via content_blocks. Fallbacks match the Master Plan v2.0
   // structure and keep the page readable if blocks are missing.
@@ -20,6 +21,7 @@ export default function Schedule() {
   const d2Label  = blocks.day2_tab_label || 'Saturday — Day 2'
 
   const dayEvents = (d, s) => events.filter(e => e.day === d && e.session === s)
+  const dayAllEvents = (d) => events.filter(e => e.day === d)
 
   // Pair girls/boys rows by event_name equality (robust to reorders and
   // non-consecutive numbering). Consumes both rows when matched.
@@ -52,11 +54,9 @@ export default function Schedule() {
     return rows
   }
 
-  const renderSession = (day, session, title) => {
-    const evts = dayEvents(day, session)
+  const renderTable = (evts, title) => {
     if (evts.length === 0) return null
     const rows = buildRows(evts)
-
     return (
       <div className="mb-8">
         <h3 className="font-oswald text-lg font-bold text-charcoal uppercase tracking-wider mb-3">{title}</h3>
@@ -83,6 +83,9 @@ export default function Schedule() {
       </div>
     )
   }
+
+  const renderSession = (day, session, title) => renderTable(dayEvents(day, session), title)
+  const renderSessionDirect = (evts, title) => renderTable(evts, title)
 
   return (
     <>
@@ -111,18 +114,23 @@ export default function Schedule() {
           </div>
         ) : (
           <>
-            {tab === 1 && (
-              <div role="tabpanel" id="schedule-panel-1" aria-labelledby="schedule-tab-1">
-                {renderSession(1, 'morning', d1mTitle)}
-                {renderSession(1, 'evening', d1eTitle)}
+            {[1, 2].map(day => tab === day && (
+              <div key={day} role="tabpanel" id={`schedule-panel-${day}`} aria-labelledby={`schedule-tab-${day}`}>
+                {meetSessions.filter(s => s.day === day).length > 0 ? (
+                  meetSessions.filter(s => s.day === day).map((s, i, arr) => {
+                    const sessionNames = ['morning', 'evening']
+                    const evts = dayAllEvents(day).filter(e => {
+                      if (arr.length <= 2) return e.session === (sessionNames[i] || 'morning')
+                      return e.session === (sessionNames[i] || sessionNames[sessionNames.length - 1] || 'morning')
+                    })
+                    const header = s.title + (s.start_time && s.start_time !== 'TBC' ? ` — ${s.start_time}` : '')
+                    return <div key={s.id}>{renderSessionDirect(evts, header)}</div>
+                  })
+                ) : (
+                  <>{renderSession(day, 'morning', day === 1 ? d1mTitle : d2mTitle)}{renderSession(day, 'evening', day === 1 ? d1eTitle : d2eTitle)}</>
+                )}
               </div>
-            )}
-            {tab === 2 && (
-              <div role="tabpanel" id="schedule-panel-2" aria-labelledby="schedule-tab-2">
-                {renderSession(2, 'morning', d2mTitle)}
-                {renderSession(2, 'evening', d2eTitle)}
-              </div>
-            )}
+            ))}
           </>
         )}
       </div>
