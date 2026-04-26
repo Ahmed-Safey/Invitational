@@ -74,8 +74,8 @@ export default function Home() {
           {/* Row 2: CAC Swimming + Screaming Eagle — equal size, side by side */}
           {(cacSwimUrl || eagleUrl) && (
             <div className="flex items-center justify-center gap-6 md:gap-10 mb-6 animate-fade-up">
-              {cacSwimUrl && <img src={cacSwimUrl} alt="CAC Swimming" className="h-20 md:h-32 w-auto object-contain" />}
-              {eagleUrl && <img src={eagleUrl} alt="Screaming Eagles" className="h-20 md:h-32 w-auto object-contain" />}
+              {cacSwimUrl && <img src={cacSwimUrl} alt="CAC Swimming" className="h-28 md:h-44 w-auto object-contain" />}
+              {eagleUrl && <img src={eagleUrl} alt="Screaming Eagles" className="h-28 md:h-44 w-auto object-contain" />}
             </div>
           )}
           <h1 className="font-oswald font-bold text-5xl md:text-7xl text-white tracking-tight uppercase leading-[0.95] animate-fade-up-delay-1">
