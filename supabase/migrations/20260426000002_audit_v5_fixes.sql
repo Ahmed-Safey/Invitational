@@ -27,5 +27,5 @@ ON CONFLICT (page_slug, block_key) DO NOTHING;
 -- 4. Google Maps embed URL for inline map iframes (Home, Contact, MeetInfo).
 -- =============================================================================
 INSERT INTO content_blocks (page_slug, block_key, block_type, label, content, sort_order) VALUES
-  ('contact', 'venue_maps_embed_url', 'text', 'Google Maps Embed URL', 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3456.789!2d31.2506!3d29.9694!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x145840c70889a74d%3A0x6c1b610ccdb1a4ea!2sCairo%20American%20College!5e0!3m2!1sen!2seg!4v1700000000000', 11)
+  ('contact', 'venue_maps_embed_url', 'text', 'Google Maps Embed URL', 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3456.7179633374285!2d31.2748515!3d29.958790099999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14583812970bbd17%3A0x7f10782ad907abac!2sCairo%20American%20College!5e0!3m2!1sar!2seg!4v1777206496628!5m2!1sar!2seg', 11)
 ON CONFLICT (page_slug, block_key) DO NOTHING;
