@@ -88,8 +88,8 @@ export default function Home() {
             ))}
           </div>
           <div className="flex gap-3 justify-center flex-wrap animate-fade-up-delay-4">
-            <Link to="/contact" className="btn-primary no-underline">Secure Your School&apos;s Spot</Link>
-            <Link to="/schedule" className="btn-outline no-underline">View Schedule</Link>
+            <Link to="/contact" className="btn-primary no-underline">{b.hero_cta_primary || 'Secure Your School\u2019s Spot'}</Link>
+            <Link to="/schedule" className="btn-outline no-underline">{b.hero_cta_secondary || 'View Schedule'}</Link>
           </div>
         </div>
         <div className="absolute bottom-0 left-0 right-0 h-20" style={{background:'linear-gradient(to bottom right,transparent 49%,#f9f8f4 50%)'}} />
@@ -121,7 +121,7 @@ export default function Home() {
             <div className="grid md:grid-cols-[1fr_1.5fr] gap-12 items-start">
               <div>
                 <p className="section-label">Step One</p>
-                <h2 className="section-title">Register<br/>Your <span className="text-crimson">Interest</span></h2>
+                <h2 className="section-title" dangerouslySetInnerHTML={{ __html: b.interest_heading || 'Register<br/>Your <span class="text-crimson">Interest</span>' }} />
                 <div className="divider" />
                 <p className="text-sm text-gray-500 mb-6">{b.interest_form_intro}</p>
                 {regSteps.length > 0 && (
