@@ -10,8 +10,8 @@ export default function Contact() {
 
   return (
     <>
-      <PageHeader slug="contact" label="Get In Touch" titleHtml='Contact & <span class="text-gold">Registration</span>' />
-      <Breadcrumb page="Contact & Registration" />
+      <PageHeader slug="contact" label="Get In Touch" titleHtml='Contact & <span class="text-gold">Interest</span>' />
+      <Breadcrumb page="Contact & Interest" />
       <div className="max-w-[900px] mx-auto py-16 px-8">
         <p className="text-sm text-gray-500 mb-8">{blocks.contact_intro}</p>
 
@@ -27,6 +27,22 @@ export default function Contact() {
               <h3>Aquatics Department</h3>
               <p className="text-sm text-crimson">{s.contact_email_aquatics}</p>
             </a>
+          )}
+          {blocks.meet_director_name && blocks.meet_director_name !== 'TBC' && (
+            <div className="info-card">
+              <h3>Meet Director</h3>
+              <p className="text-sm text-gray-700 font-medium">{blocks.meet_director_name}</p>
+              {blocks.meet_director_role && <p className="text-xs text-gray-400">{blocks.meet_director_role}</p>}
+              {blocks.meet_director_email && <a href={`mailto:${blocks.meet_director_email}`} className="text-sm text-crimson no-underline block mt-1">{blocks.meet_director_email}</a>}
+              {blocks.meet_director_phone && blocks.meet_director_phone !== 'TBC' && <p className="text-sm text-gray-500 mt-1">{blocks.meet_director_phone}</p>}
+            </div>
+          )}
+          {blocks.venue_address_line && (
+            <div className="info-card">
+              <h3>Venue</h3>
+              <p className="text-sm text-gray-700">{blocks.venue_address_line}</p>
+              {blocks.venue_maps_url && <a href={blocks.venue_maps_url} target="_blank" rel="noreferrer" className="text-sm text-crimson no-underline inline-block mt-2">Open in Google Maps &rarr;</a>}
+            </div>
           )}
         </div>
 

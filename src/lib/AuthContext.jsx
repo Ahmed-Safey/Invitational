@@ -6,7 +6,7 @@ const AuthContext = createContext({})
 // Max time we'll keep the admin shell in the "Loading" state waiting for the
 // is_admin RPC to resolve. If the call hangs (network, stuck gotrue lock,
 // supabase down) we assume "not admin" so the UI never wedges.
-const ADMIN_RPC_TIMEOUT_MS = 8000
+const ADMIN_RPC_TIMEOUT_MS = 15000
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)

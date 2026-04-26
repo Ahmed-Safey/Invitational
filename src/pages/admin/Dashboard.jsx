@@ -5,10 +5,13 @@ import { useSite } from '../../lib/SiteContext'
 import AdminLayout from '../../components/admin/AdminLayout'
 
 export default function Dashboard() {
-  const { settings, currentSeason, pages, getMediaUrl } = useSite()
+  const { settings, currentSeason, pages, getMediaUrl, refetch } = useSite()
   const [stats, setStats] = useState({ events: 0, blocks: 0, media: 0 })
 
   useEffect(() => {
+    // Re-fetch site context on mount so Dashboard always shows the latest
+    // integration/media state — even if the admin just saved in another page.
+    refetch()
     Promise.all([
       supabase.from('events').select('id', { count: 'exact', head: true }),
       supabase.from('content_blocks').select('id', { count: 'exact', head: true }),
