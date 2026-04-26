@@ -84,7 +84,7 @@ export default function Sessions() {
         {times ? (
           <SessionTimes times={times} />
         ) : (
-          <div className="mt-8 bg-cream-mid border-2 border-dashed border-crimson/20 p-8 text-center rounded"><p className="font-oswald text-sm tracking-widest uppercase text-gray-400">Session times — To Be Confirmed</p></div>
+          <div className="mt-8 bg-cream-mid border-2 border-dashed border-crimson/20 p-8 text-center rounded"><p className="font-oswald text-sm tracking-widest uppercase text-gray-400">Session times — To Be Confirmed</p>{currentSeason?.dates_display && <p className="text-xs text-gray-400 mt-2">Check back closer to {currentSeason.dates_display}</p>}</div>
         )}
 
         <div className="mt-8 flex gap-4 flex-wrap">

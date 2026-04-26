@@ -32,6 +32,11 @@ export default function Entries() {
       <div className="max-w-[900px] mx-auto py-16 px-8">
         <SeasonToggle />
 
+        <div className="bg-crimson/5 border-l-4 border-crimson p-5 mb-8">
+          <p className="font-oswald text-sm font-semibold tracking-wider uppercase text-crimson mb-1">Entry Deadline</p>
+          <p className="text-sm text-gray-600">{blocks.entry_deadline_banner || 'All entries must be submitted at least 72 hours before the meet. Deck entries are not accepted.'}</p>
+        </div>
+
         <h2 className="section-title">Entry <span className="text-crimson">Process</span></h2>
         <div className="divider" />
         {blocks.entry_steps ? (

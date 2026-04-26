@@ -29,6 +29,7 @@ function FormatCard({ title, items }) {
 export default function Home() {
   const { settings, seasons, currentSeason, getMediaUrl } = useSite()
   const { blocks: b } = useContent('home')
+  const { blocks: contactBlocks } = useContent('contact')
   // Session titles/labels shared with the Schedule page so they stay in sync
   // when admins rename them for a future season.
   const { blocks: sched } = useContent('schedule')
@@ -250,6 +251,25 @@ export default function Home() {
           <h2 className="section-title !text-white">Express Your <span className="text-gold">Interest</span></h2>
           <div className="divider !bg-gold mx-auto" />
           <p className="text-white/50 mb-8 max-w-2xl mx-auto">{b.contact_intro}</p>
+
+          <div className="grid md:grid-cols-2 gap-4 text-left mb-8 max-w-2xl mx-auto">
+            {contactBlocks.meet_director_name && contactBlocks.meet_director_name !== 'TBC' && (
+              <div className="bg-white/5 border border-gold/10 p-5">
+                <p className="font-oswald text-xs tracking-widest uppercase text-gold mb-2">Meet Director</p>
+                <p className="text-white text-sm font-medium">{contactBlocks.meet_director_name}</p>
+                {contactBlocks.meet_director_role && <p className="text-white/40 text-xs mt-1">{contactBlocks.meet_director_role}</p>}
+                {contactBlocks.meet_director_phone && contactBlocks.meet_director_phone !== 'TBC' && <p className="text-gold/60 text-sm mt-2">{contactBlocks.meet_director_phone}</p>}
+              </div>
+            )}
+            {contactBlocks.venue_address_line && (
+              <div className="bg-white/5 border border-gold/10 p-5">
+                <p className="font-oswald text-xs tracking-widest uppercase text-gold mb-2">Venue</p>
+                <p className="text-white text-sm">{contactBlocks.venue_address_line}</p>
+                {contactBlocks.venue_maps_url && <a href={contactBlocks.venue_maps_url} target="_blank" rel="noreferrer" className="text-gold/60 text-xs no-underline inline-block mt-2">Open in Google Maps &rarr;</a>}
+              </div>
+            )}
+          </div>
+
           <div className="flex gap-4 justify-center flex-wrap mb-8">
             {s.contact_email_athletics && <a href={`mailto:${s.contact_email_athletics}`} className="btn-outline no-underline">Athletics: {s.contact_email_athletics}</a>}
             {s.contact_email_aquatics && <a href={`mailto:${s.contact_email_aquatics}`} className="btn-outline no-underline">Aquatics: {s.contact_email_aquatics}</a>}

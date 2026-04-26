@@ -3,6 +3,7 @@ import Breadcrumb from '../../components/public/Breadcrumb'
 import { useContent, useScoring } from '../../lib/hooks'
 import { useSite } from '../../lib/SiteContext'
 import Loading from '../../components/public/Loading'
+import { Link } from 'react-router-dom'
 
 function DataTable({ headers, keys, rows }) {
   if (!Array.isArray(rows) || rows.length === 0) return null
@@ -20,6 +21,7 @@ function DataTable({ headers, keys, rows }) {
 export default function MeetInfo() {
   const { settings, seasons } = useSite()
   const { blocks: b, loading } = useContent('meet-info')
+  const { blocks: contactBlocks } = useContent('contact')
   const { scoring } = useScoring()
 
   if (loading) return <><PageHeader slug="meet-info" label="Everything You Need to Know" titleHtml='Meet <span class="text-gold">Information</span>' /><Loading /></>
@@ -47,7 +49,7 @@ export default function MeetInfo() {
         <h2 className="section-title">Venue & <span className="text-crimson">Equipment</span></h2>
         <div className="divider" />
         <div className="grid md:grid-cols-2 gap-4 mb-12">
-          <div className="info-card"><h3>Venue</h3><p className="text-sm text-gray-500">{b.venue_name}{b.venue_address && <><br/>{b.venue_address}</>}{b.venue_pool && <><br/>{b.venue_pool}</>}</p></div>
+          <div className="info-card"><h3>Venue</h3><p className="text-sm text-gray-500">{b.venue_name}{b.venue_address && <><br/>{b.venue_address}</>}{b.venue_pool && <><br/>{b.venue_pool}</>}</p>{contactBlocks.venue_address_line && <p className="text-xs text-gray-400 mt-2">{contactBlocks.venue_address_line}</p>}{contactBlocks.venue_maps_url && <a href={contactBlocks.venue_maps_url} target="_blank" rel="noreferrer" className="text-xs text-crimson no-underline inline-block mt-1">Open in Google Maps &rarr;</a>}</div>
           <div className="info-card"><h3>Timing System</h3><p className="text-sm text-gray-500">{b.timing_text}</p></div>
           <div className="info-card"><h3>Rules</h3><p className="text-sm text-gray-500">{b.rules_text}</p></div>
           <div className="info-card"><h3>Dryland Area</h3><p className="text-sm text-gray-500">{b.dryland_text}</p></div>
@@ -90,7 +92,17 @@ export default function MeetInfo() {
           <div className="info-card"><h3>Officials</h3><p className="text-sm text-gray-500">{b.officials_text}</p></div>
         </div>
 
-        {settings?.meet_info_pdf_url && <a href={settings.meet_info_pdf_url} target="_blank" rel="noreferrer" className="btn-primary no-underline">&darr; Download Meet Info PDF</a>}
+        <h2 className="section-title">Entry <span className="text-crimson">Deadline</span></h2>
+        <div className="divider" />
+        <div className="bg-crimson/5 border-l-4 border-crimson p-6 mb-8">
+          <p className="font-oswald text-sm font-semibold tracking-wider uppercase text-crimson mb-1">Important</p>
+          <p className="text-sm text-gray-600">{b.entry_deadline_text || 'All entries must be submitted via Hy-Tek Team Manager at least 72 hours before the meet. Deck entries are not accepted.'}</p>
+        </div>
+
+        <div className="flex gap-4 flex-wrap">
+          {settings?.meet_info_pdf_url && <a href={settings.meet_info_pdf_url} target="_blank" rel="noreferrer" className="btn-primary no-underline">&darr; Download Meet Info PDF</a>}
+          <Link to="/contact" className="btn-outline no-underline !text-crimson !border-crimson/30">Register Interest &rarr;</Link>
+        </div>
       </div>
     </>
   )

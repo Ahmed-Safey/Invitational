@@ -19,6 +19,7 @@ export default function Warmup() {
         ) : (
           <div className="bg-cream-mid border-2 border-dashed border-crimson/20 p-8 text-center rounded mb-8">
             <p className="font-oswald text-sm tracking-widest uppercase text-gray-400">Warm-up schedule — To Be Confirmed</p>
+            {currentSeason?.dates_display && <p className="text-xs text-gray-400 mt-2">Usually finalized 2 weeks before the meet — {currentSeason.dates_display}</p>}
           </div>
         )}
 
