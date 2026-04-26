@@ -28,11 +28,18 @@ export default function Fees() {
             <h3>Bank Transfer Details</h3>
             <table className="w-full text-sm">
               <tbody>
-                {[['Bank Name', bank.bank_name],['Account Name', bank.account_name],['Account Number', bank.account_number],['SWIFT / IBAN', bank.swift_iban],['Reference', bank.reference_format]]
+                {[['Bank Name', bank.bank_name],['IBAN Number', bank.iban_number],['Account Number', bank.account_number],['Swift Code', bank.swift_code],['Beneficiary', bank.beneficiary],['Address in Cairo', bank.address],['Phone', bank.phone]]
                   .filter(([, v]) => v && v.trim() && v.toUpperCase() !== 'TBC' && v.toUpperCase() !== 'TBD')
                   .map(([k,v]) => (
                     <tr key={k} className="border-b border-cream-mid"><td className="py-2 font-bold text-charcoal">{k}</td><td className="py-2 text-gray-500">{v}</td></tr>
                 ))}
+                {bank.important_note && bank.important_note.trim() && bank.important_note.toUpperCase() !== 'TBC' && (
+                  <tr className="border-b border-cream-mid bg-cream">
+                    <td colSpan={2} className="py-3 text-center text-sm font-semibold text-crimson">
+                      Important: {bank.important_note}
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

@@ -72,7 +72,7 @@ Invitational/
 | `scoring_table` | Points table (place → individual/relay pts) | `place`, `individual_points`, `relay_points` |
 | `media` | Image registry (slug → Google Drive URL) | `slug`, `label`, `google_drive_url`, `alt_text` |
 | `programs` | Downloadable documents per season | `season_slug`, `program_type` (entry_file/heat_sheet/psych_sheet/program_booklet), `google_drive_url`, `is_published` |
-| `bank_details` | Bank transfer info for payments | `bank_name`, `account_number`, `swift_iban`, `is_published` |
+| `bank_details` | Bank transfer info for payments | `bank_name`, `iban_number`, `account_number`, `swift_code`, `beneficiary`, `address`, `phone`, `important_note`, `is_published` |
 | `schema_migrations` | Tracks which SQL migrations have been applied | `filename` (PK), `applied_at` |
 
 ### RLS Policy Pattern
@@ -300,3 +300,4 @@ Migrations are in `supabase/migrations/` and can be applied via `npm run db:push
 | `20260426000002_audit_v5_fixes.sql` | Hide pages, contact title, deadline blocks, maps embed |
 | `20260426000003_sessions_table.sql` | `meet_sessions` table + seed data |
 | `20260427000000_audit_v6.sql` | Indexes, `start_time` semantics, `schema_migrations` table |
+| `20260427100000_bank_details_fields.sql` | Updated bank_details fields (IBAN, Swift Code, Beneficiary, Address, Phone, Important Note) |

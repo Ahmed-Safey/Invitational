@@ -4,6 +4,14 @@ All database migrations and significant code changes, in reverse chronological o
 
 ---
 
+## 2026-04-27 — `20260427100000_bank_details_fields.sql`
+
+- **Renamed columns**: `swift_iban` → `swift_code`, `account_name` → `beneficiary`, `reference_format` → `important_note`
+- **Added columns**: `iban_number`, `address`, `phone`
+- **Default important_note**: "Please indicate the event account #"
+- **Updated FeesAdmin**: 8 fields (Bank Name, IBAN Number, Account Number, Swift Code, Beneficiary, Address in Cairo, Phone, Important Note)
+- **Updated Fees public page**: shows all fields + highlighted "Important" row for the note
+
 ## 2026-04-27 — Audit v2 Code Changes
 
 - **Reverted sign-out debounce** — restored 600ms debounce in `AdminLayout.jsx` (intentional for GoTrue token refresh)

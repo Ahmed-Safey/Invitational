@@ -24,7 +24,7 @@ export default function FeesAdmin() {
     supabase.from('bank_details').select('*').single().then(({ data }) => { if (data) setBank(data) })
   }, [])
 
-  const REQUIRED = ['bank_name','account_name','account_number','swift_iban','reference_format']
+  const REQUIRED = ['bank_name','iban_number','account_number','swift_code','beneficiary']
   const incomplete = REQUIRED.filter(k => {
     const v = (bank[k] || '').trim()
     return !v || v.toUpperCase() === 'TBC' || v.toUpperCase() === 'TBD'
@@ -37,10 +37,13 @@ export default function FeesAdmin() {
     setSaving(true)
     const updates = {
       bank_name: bank.bank_name,
-      account_name: bank.account_name,
+      iban_number: bank.iban_number,
       account_number: bank.account_number,
-      swift_iban: bank.swift_iban,
-      reference_format: bank.reference_format,
+      swift_code: bank.swift_code,
+      beneficiary: bank.beneficiary,
+      address: bank.address,
+      phone: bank.phone,
+      important_note: bank.important_note,
       is_published: bank.is_published,
     }
     const { error } = await supabase.from('bank_details').update(updates).eq('id', 1)
@@ -55,10 +58,13 @@ export default function FeesAdmin() {
     <div className="admin-card max-w-lg">
       <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Bank Transfer Details</h3>
       <Field {...fp} label="Bank Name" field="bank_name" />
-      <Field {...fp} label="Account Name" field="account_name" />
+      <Field {...fp} label="IBAN Number" field="iban_number" />
       <Field {...fp} label="Account Number" field="account_number" />
-      <Field {...fp} label="SWIFT / IBAN" field="swift_iban" />
-      <Field {...fp} label="Reference Format" field="reference_format" />
+      <Field {...fp} label="Swift Code" field="swift_code" />
+      <Field {...fp} label="Beneficiary" field="beneficiary" />
+      <Field {...fp} label="Address in Cairo" field="address" />
+      <Field {...fp} label="Phone" field="phone" />
+      <Field {...fp} label="Important Note" field="important_note" />
       <div className="mb-4">
         <label className="flex items-center gap-2 text-sm cursor-pointer">
           <input type="checkbox" checked={bank.is_published || false} onChange={e => setBank({...bank, is_published: e.target.checked})} />
