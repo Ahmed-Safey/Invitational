@@ -252,28 +252,26 @@ export default function Home() {
           <div className="divider !bg-gold mx-auto" />
           <p className="text-white/50 mb-8 max-w-2xl mx-auto">{b.contact_intro}</p>
 
-          <div className="grid md:grid-cols-2 gap-4 text-left mb-8 max-w-2xl mx-auto">
-            {contactBlocks.meet_director_name && contactBlocks.meet_director_name !== 'TBC' && (
-              <div className="bg-white/5 border border-gold/10 p-5">
-                <p className="font-oswald text-xs tracking-widest uppercase text-gold mb-2">Meet Director</p>
-                <p className="text-white text-sm font-medium">{contactBlocks.meet_director_name}</p>
-                {contactBlocks.meet_director_role && <p className="text-white/40 text-xs mt-1">{contactBlocks.meet_director_role}</p>}
-                {contactBlocks.meet_director_phone && contactBlocks.meet_director_phone !== 'TBC' && <p className="text-gold/60 text-sm mt-2">{contactBlocks.meet_director_phone}</p>}
-              </div>
-            )}
-            {contactBlocks.venue_address_line && (
-              <div className="bg-white/5 border border-gold/10 p-5">
-                <p className="font-oswald text-xs tracking-widest uppercase text-gold mb-2">Venue</p>
-                <p className="text-white text-sm">{contactBlocks.venue_address_line}</p>
-                {contactBlocks.venue_maps_embed_url && (
-                  <div className="mt-3 rounded overflow-hidden">
-                    <iframe src={contactBlocks.venue_maps_embed_url} className="w-full h-[180px] border-none" allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="Venue Map" />
-                  </div>
-                )}
-                {contactBlocks.venue_maps_url && <a href={contactBlocks.venue_maps_url} target="_blank" rel="noreferrer" className="text-gold/60 text-xs no-underline inline-block mt-2">Open in Google Maps &rarr;</a>}
-              </div>
-            )}
-          </div>
+          {contactBlocks.meet_director_name && contactBlocks.meet_director_name !== 'TBC' && (
+            <div className="bg-white/5 border border-gold/10 p-5 text-left max-w-2xl mx-auto mb-4">
+              <p className="font-oswald text-xs tracking-widest uppercase text-gold mb-2">Meet Director</p>
+              <p className="text-white text-sm font-medium">{contactBlocks.meet_director_name}</p>
+              {contactBlocks.meet_director_role && <p className="text-white/40 text-xs mt-1">{contactBlocks.meet_director_role}</p>}
+              {contactBlocks.meet_director_phone && contactBlocks.meet_director_phone !== 'TBC' && <p className="text-gold/60 text-sm mt-2">{contactBlocks.meet_director_phone}</p>}
+            </div>
+          )}
+          {contactBlocks.venue_address_line && (
+            <div className="bg-white/5 border border-gold/10 p-5 text-left max-w-2xl mx-auto mb-8">
+              <p className="font-oswald text-xs tracking-widest uppercase text-gold mb-2">Venue</p>
+              <p className="text-white text-sm">{contactBlocks.venue_address_line}</p>
+              {contactBlocks.venue_maps_embed_url && (
+                <div className="mt-3 rounded overflow-hidden">
+                  <iframe src={contactBlocks.venue_maps_embed_url} className="w-full h-[250px] border-none" allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="Venue Map" />
+                </div>
+              )}
+              {contactBlocks.venue_maps_url && <a href={contactBlocks.venue_maps_url} target="_blank" rel="noreferrer" className="text-gold/60 text-xs no-underline inline-block mt-2">Open in Google Maps &rarr;</a>}
+            </div>
+          )}
 
           <div className="flex gap-4 justify-center flex-wrap mb-8">
             {s.contact_email_athletics && <a href={`mailto:${s.contact_email_athletics}`} className="btn-outline no-underline">Athletics: {s.contact_email_athletics}</a>}
