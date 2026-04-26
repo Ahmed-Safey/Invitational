@@ -12,6 +12,7 @@ ON CONFLICT (page_slug, block_key) DO NOTHING;
 --    the mixed medley at #49). If this is wrong, update in the admin
 --    Events editor. Wrapped in a guard so it only inserts if #50 is
 --    truly absent.
-INSERT INTO events (event_number, gender, event_name, distance, stroke, age_group, format, day, session, sort_order, is_break, break_label)
-SELECT 50, 'mixed', '4×25 Mixed Freestyle Relay', NULL, 'relay', '9-10', 'timed_final', 2, 'morning', 24, false, NULL
-WHERE NOT EXISTS (SELECT 1 FROM events WHERE event_number = 50 AND day = 2 AND session = 'morning');
+INSERT INTO events (event_number, gender, event_name, distance, stroke, age_group, format, day, session, sort_order, is_break, break_label, season_slug)
+SELECT 50, 'mixed', '4×25 Mixed Freestyle Relay', NULL, 'relay', '9-10', 'timed_final', 2, 'morning', 24, false, NULL, s.slug
+FROM seasons s WHERE s.is_current = true
+  AND NOT EXISTS (SELECT 1 FROM events WHERE event_number = 50 AND day = 2 AND session = 'morning');
