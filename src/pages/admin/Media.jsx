@@ -4,7 +4,7 @@ import { useSite } from '../../lib/SiteContext'
 import AdminLayout from '../../components/admin/AdminLayout'
 import toast from 'react-hot-toast'
 
-const CORE_MEDIA_SLUGS = ['seis-logo','cac-logo','hero-photo','eagle-watermark','page-header-bg']
+const CORE_MEDIA_SLUGS = ['seis-logo','cac-logo','screaming-eagle','hero-photo','page-header-bg']
 
 export default function Media() {
   const { refetch } = useSite()

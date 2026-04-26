@@ -35,7 +35,8 @@ export default function Home() {
   const { events } = useEvents(null, null, currentSeason?.slug)
   const heroUrl = driveUrl(getMediaUrl('hero-photo'))
   const logoUrl = driveUrl(getMediaUrl('seis-logo'), 600)
-  const eagleUrl = driveUrl(getMediaUrl('eagle-watermark'), 400)
+  const cacSwimUrl = driveUrl(getMediaUrl('cac-logo'), 400)
+  const eagleUrl = driveUrl(getMediaUrl('screaming-eagle'), 400)
 
   if (!settings) return <Loading />
   const s = settings
@@ -66,10 +67,17 @@ export default function Home() {
         }}>
         <div className="absolute inset-0" style={{backgroundImage:'linear-gradient(rgba(198,186,142,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(198,186,142,0.03) 1px,transparent 1px)',backgroundSize:'64px 64px'}} />
         <div className="relative z-10">
-          <div className="flex items-center justify-center gap-8 mb-6 flex-wrap animate-fade-up">
-            {logoUrl && <img src={logoUrl} alt="SEIS" className="w-full max-w-[400px]" />}
-            {eagleUrl && <img src={eagleUrl} alt="Eagles" className="w-full max-w-[200px] hidden md:block" />}
+          {/* Row 1: SEIS logo centred */}
+          <div className="flex justify-center mb-4 animate-fade-up">
+            {logoUrl && <img src={logoUrl} alt="Swimming Eagles Invitational Series" className="w-full max-w-[340px] md:max-w-[400px]" />}
           </div>
+          {/* Row 2: CAC Swimming + Screaming Eagle — equal size, side by side */}
+          {(cacSwimUrl || eagleUrl) && (
+            <div className="flex items-center justify-center gap-6 md:gap-10 mb-6 animate-fade-up">
+              {cacSwimUrl && <img src={cacSwimUrl} alt="CAC Swimming" className="h-14 md:h-20 w-auto object-contain" />}
+              {eagleUrl && <img src={eagleUrl} alt="Screaming Eagles" className="h-14 md:h-20 w-auto object-contain" />}
+            </div>
+          )}
           <h1 className="font-oswald font-bold text-5xl md:text-7xl text-white tracking-tight uppercase leading-[0.95] animate-fade-up-delay-1">
             Swimming Eagles<br/><span className="text-gold">Invitational Series</span>
           </h1>
