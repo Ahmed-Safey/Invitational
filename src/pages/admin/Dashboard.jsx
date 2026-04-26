@@ -7,6 +7,40 @@ import AdminLayout from '../../components/admin/AdminLayout'
 export default function Dashboard() {
   const { settings, currentSeason, pages, getMediaUrl, refetch } = useSite()
   const [stats, setStats] = useState({ events: 0, blocks: 0, media: 0 })
+  const [exporting, setExporting] = useState(false)
+
+  const exportBackup = async () => {
+    setExporting(true)
+    try {
+      const [sRes, cbRes, seRes, mRes, evRes] = await Promise.all([
+        supabase.from('site_settings').select('*').single(),
+        supabase.from('content_blocks').select('*').order('page_slug,sort_order'),
+        supabase.from('seasons').select('*').order('slug'),
+        supabase.from('media').select('*').order('slug'),
+        supabase.from('events').select('*').order('season_slug,day,session,sort_order'),
+      ])
+      const backup = {
+        exported_at: new Date().toISOString(),
+        site_settings: sRes.data,
+        content_blocks: cbRes.data,
+        seasons: seRes.data,
+        media: mRes.data,
+        events: evRes.data,
+      }
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `seis-backup-${new Date().toISOString().slice(0, 10)}.json`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (err) {
+      console.error('Export failed:', err)
+      alert('Export failed — check console for details.')
+    } finally {
+      setExporting(false)
+    }
+  }
 
   useEffect(() => {
     // Re-fetch site context on mount so Dashboard always shows the latest
@@ -91,6 +125,14 @@ export default function Dashboard() {
         <Link to="/admin/events" className="admin-btn-outline no-underline">Edit Events ({stats.events}) →</Link>
         <Link to="/admin/content" className="admin-btn-outline no-underline">Edit Content ({stats.blocks}) →</Link>
         <a href="/" target="_blank" rel="noreferrer" className="admin-btn-outline no-underline">View Live Site ↗</a>
+      </div>
+
+      <div className="admin-card mt-8">
+        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Backup</h3>
+        <p className="text-xs text-gray-400 mb-3">Download a JSON snapshot of all settings, content blocks, seasons, media, and events. Run this before each meet.</p>
+        <button onClick={exportBackup} disabled={exporting} className="admin-btn-outline text-xs">
+          {exporting ? 'Exporting…' : '↓ Export Content Backup'}
+        </button>
       </div>
     </AdminLayout>
   )

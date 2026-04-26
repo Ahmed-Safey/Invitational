@@ -7,6 +7,26 @@ const AuthContext = createContext({})
 // is_admin RPC to resolve. If the call hangs (network, stuck gotrue lock,
 // supabase down) we assume "not admin" so the UI never wedges.
 const ADMIN_RPC_TIMEOUT_MS = 15000
+const ADMIN_CACHE_KEY = 'seis_admin_cache'
+const ADMIN_CACHE_TTL_MS = 60 * 60 * 1000 // 1 hour
+
+// Read/write a { uid, ts } object from localStorage to skip the is_admin RPC
+// on page refresh when we've verified recently. RLS still enforces server-side.
+const readAdminCache = (uid) => {
+  try {
+    const raw = localStorage.getItem(ADMIN_CACHE_KEY)
+    if (!raw) return null
+    const { uid: cachedUid, ts } = JSON.parse(raw)
+    if (cachedUid === uid && Date.now() - ts < ADMIN_CACHE_TTL_MS) return true
+  } catch {}
+  return null
+}
+const writeAdminCache = (uid, isAdmin) => {
+  try {
+    if (isAdmin) localStorage.setItem(ADMIN_CACHE_KEY, JSON.stringify({ uid, ts: Date.now() }))
+    else localStorage.removeItem(ADMIN_CACHE_KEY)
+  } catch {}
+}
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
@@ -40,6 +60,14 @@ export function AuthProvider({ children }) {
     // races with the first call on gotrue's lock.
     if (lastVerifiedUserIdRef.current === uid && !verifyInFlightRef.current) return
     if (verifyInFlightRef.current) return
+    // Fast path: trust the localStorage cache for 1 hour so page refresh on
+    // slow Wi-Fi doesn't hang on the RPC. RLS enforces server-side anyway.
+    const cached = readAdminCache(uid)
+    if (cached === true) {
+      setIsAdmin(true)
+      lastVerifiedUserIdRef.current = uid
+      return
+    }
     verifyInFlightRef.current = true
     try {
       const result = await Promise.race([
@@ -49,8 +77,10 @@ export function AuthProvider({ children }) {
       if (result.error) {
         console.warn('is_current_user_admin RPC failed:', result.error.message)
         setIsAdmin(false)
+        writeAdminCache(uid, false)
       } else {
         setIsAdmin(!!result.data)
+        writeAdminCache(uid, !!result.data)
       }
       lastVerifiedUserIdRef.current = uid
     } finally {
@@ -102,6 +132,7 @@ export function AuthProvider({ children }) {
   const signOut = async () => {
     await supabase.auth.signOut()
     lastVerifiedUserIdRef.current = null
+    writeAdminCache(null, false)
     setUser(null)
     setIsAdmin(false)
   }
