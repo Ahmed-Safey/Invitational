@@ -61,28 +61,21 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     let cancelled = false
 
-    // 5s safety timeout on getSession itself. If gotrue's local lock is
-    // wedged (rare but documented) the promise can hang indefinitely; we'd
-    // rather treat the user as signed-out and show /admin/login than spin
-    // forever. Also self-heal: if getSession actually throws (corrupt token
-    // in localStorage), wipe the auth keys so the next visit starts clean.
-    Promise.race([
-      supabase.auth.getSession(),
-      new Promise(resolve => setTimeout(() => resolve({ data: { session: null }, error: new Error('getSession timeout') }), 5000)),
-    ]).then(async (res) => {
+    // Let gotrue resolve getSession on its own schedule. Supabase internally
+    // recovers orphaned locks after 5 s, so the call always resolves — it just
+    // takes up to ~6 s in the worst case. We no longer race it with our own
+    // timer because a premature timeout was wiping the auth token and logging
+    // the admin out on every refresh.
+    supabase.auth.getSession().then(async ({ data: { session }, error }) => {
       if (cancelled) return
-      const session = res?.data?.session ?? null
-      if (res?.error) {
-        console.warn('getSession failed, treating as signed-out:', res.error.message)
-        // Self-heal: clear gotrue's storage keys so a corrupt token doesn't
-        // wedge every future visit. (Safe no-op if there's nothing there.)
-        try {
-          Object.keys(localStorage).filter(k => k.startsWith('sb-')).forEach(k => localStorage.removeItem(k))
-        } catch {}
-      }
+      if (error) console.warn('getSession error (treating as signed-out):', error.message)
       setUser(session?.user ?? null)
       await verifyAdmin(session)
       if (!cancelled) setLoading(false)
+    }).catch(err => {
+      // Genuine exception (corrupt storage, browser security policy, etc.)
+      console.error('getSession threw:', err)
+      if (!cancelled) { setUser(null); setIsAdmin(false); setLoading(false) }
     })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
