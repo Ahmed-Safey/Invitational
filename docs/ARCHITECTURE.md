@@ -23,11 +23,12 @@
 ```
 Invitational/
 ├── public/                  # Static assets (og-image.png, favicon.svg, sitemap.xml)
+│   └── fallbacks/           # Static Drive image fallbacks (hero-photo, seis-logo, etc.)
 ├── scripts/
 │   ├── build-sitemap.mjs    # Pre-build sitemap generator
 │   └── gen-og-image.mjs     # OG image generator (SVG → PNG)
 ├── supabase/
-│   └── migrations/          # SQL migrations (run manually in Supabase SQL Editor)
+│   └── migrations/          # SQL migrations (npm run db:push or Supabase SQL Editor)
 ├── src/
 │   ├── main.jsx             # App entry point, ?reset=1 escape hatch
 │   ├── App.jsx              # Router, VisibleRoute guard, layout shell
