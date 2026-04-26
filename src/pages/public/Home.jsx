@@ -265,6 +265,11 @@ export default function Home() {
               <div className="bg-white/5 border border-gold/10 p-5">
                 <p className="font-oswald text-xs tracking-widest uppercase text-gold mb-2">Venue</p>
                 <p className="text-white text-sm">{contactBlocks.venue_address_line}</p>
+                {contactBlocks.venue_maps_embed_url && (
+                  <div className="mt-3 rounded overflow-hidden">
+                    <iframe src={contactBlocks.venue_maps_embed_url} className="w-full h-[180px] border-none" allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="Venue Map" />
+                  </div>
+                )}
                 {contactBlocks.venue_maps_url && <a href={contactBlocks.venue_maps_url} target="_blank" rel="noreferrer" className="text-gold/60 text-xs no-underline inline-block mt-2">Open in Google Maps &rarr;</a>}
               </div>
             )}

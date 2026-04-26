@@ -49,7 +49,17 @@ export default function MeetInfo() {
         <h2 className="section-title">Venue & <span className="text-crimson">Equipment</span></h2>
         <div className="divider" />
         <div className="grid md:grid-cols-2 gap-4 mb-12">
-          <div className="info-card"><h3>Venue</h3><p className="text-sm text-gray-500">{b.venue_name}{b.venue_address && <><br/>{b.venue_address}</>}{b.venue_pool && <><br/>{b.venue_pool}</>}</p>{contactBlocks.venue_address_line && <p className="text-xs text-gray-400 mt-2">{contactBlocks.venue_address_line}</p>}{contactBlocks.venue_maps_url && <a href={contactBlocks.venue_maps_url} target="_blank" rel="noreferrer" className="text-xs text-crimson no-underline inline-block mt-1">Open in Google Maps &rarr;</a>}</div>
+          <div className="info-card">
+            <h3>Venue</h3>
+            <p className="text-sm text-gray-500">{b.venue_name}{b.venue_address && <><br/>{b.venue_address}</>}{b.venue_pool && <><br/>{b.venue_pool}</>}</p>
+            {contactBlocks.venue_address_line && <p className="text-xs text-gray-400 mt-2">{contactBlocks.venue_address_line}</p>}
+            {contactBlocks.venue_maps_embed_url && (
+              <div className="mt-3 rounded overflow-hidden">
+                <iframe src={contactBlocks.venue_maps_embed_url} className="w-full h-[180px] border-none" allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="Venue Map" />
+              </div>
+            )}
+            {contactBlocks.venue_maps_url && <a href={contactBlocks.venue_maps_url} target="_blank" rel="noreferrer" className="text-xs text-crimson no-underline inline-block mt-1">Open in Google Maps &rarr;</a>}
+          </div>
           <div className="info-card"><h3>Timing System</h3><p className="text-sm text-gray-500">{b.timing_text}</p></div>
           <div className="info-card"><h3>Rules</h3><p className="text-sm text-gray-500">{b.rules_text}</p></div>
           <div className="info-card"><h3>Dryland Area</h3><p className="text-sm text-gray-500">{b.dryland_text}</p></div>

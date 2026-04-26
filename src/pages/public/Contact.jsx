@@ -41,10 +41,30 @@ export default function Contact() {
             <div className="info-card">
               <h3>Venue</h3>
               <p className="text-sm text-gray-700">{blocks.venue_address_line}</p>
+              {blocks.venue_maps_embed_url && (
+                <div className="mt-3 rounded overflow-hidden">
+                  <iframe src={blocks.venue_maps_embed_url} className="w-full h-[200px] border-none" allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="Venue Map" />
+                </div>
+              )}
               {blocks.venue_maps_url && <a href={blocks.venue_maps_url} target="_blank" rel="noreferrer" className="text-sm text-crimson no-underline inline-block mt-2">Open in Google Maps &rarr;</a>}
             </div>
           )}
         </div>
+
+        {/* Full-width venue map */}
+        {blocks.venue_maps_embed_url && (
+          <>
+            <h2 className="section-title">Find <span className="text-crimson">Us</span></h2>
+            <div className="divider" />
+            <div className="bg-white shadow-lg mb-12 rounded overflow-hidden">
+              <iframe src={blocks.venue_maps_embed_url} className="w-full h-[350px] border-none" allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="Cairo American College — Venue Map" />
+              <div className="px-5 py-3 flex items-center justify-between flex-wrap gap-2 bg-cream-mid">
+                <span className="text-xs text-gray-500">{blocks.venue_address_line}</span>
+                {blocks.venue_maps_url && <a href={blocks.venue_maps_url} target="_blank" rel="noreferrer" className="text-xs text-crimson no-underline">Open in Google Maps &rarr;</a>}
+              </div>
+            </div>
+          </>
+        )}
 
         <div className="flex gap-4 flex-wrap mb-12">
           {s?.google_form_url && <a href={s.google_form_url} target="_blank" rel="noreferrer" className="btn-primary no-underline">Submit Interest Form &rarr;</a>}
