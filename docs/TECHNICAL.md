@@ -1,7 +1,7 @@
 # SEIS — Technical Reference
 
 > Every implementation detail, config value, security measure, and pattern used in the codebase.
-> Last updated: April 26, 2026.
+> Last updated: April 27, 2026.
 
 ---
 
@@ -37,6 +37,7 @@
 npm run dev         → vite (HMR dev server, port 5173)
 npm run build       → vite build → dist/   (then)→ node scripts/build-sitemap.mjs
 npm run preview     → vite preview (serve dist/ locally)
+npm run db:push     → supabase db push --db-url $SUPABASE_DB_URL
 ```
 
 ### Vite Config (`vite.config.js`)
@@ -67,6 +68,7 @@ npm run preview     → vite preview (serve dist/ locally)
 | `VITE_SUPABASE_URL` | Yes | `.env` + Vercel | Supabase project URL (e.g. `https://xyz.supabase.co`) |
 | `VITE_SUPABASE_ANON_KEY` | Yes | `.env` + Vercel | Supabase anon key (public, RLS-protected) |
 | `SITE_URL` | No | Vercel only | Production URL for sitemap (defaults to `https://swimming-eagles-invitational.vercel.app`) |
+| `SUPABASE_DB_URL` | No | Local only | Direct DB connection string for `npm run db:push` (Supabase CLI migration runner) |
 
 **Missing env vars** → `configError` is set in `supabase.js` → app renders `<ErrorScreen>` instead of hanging.
 
@@ -88,7 +90,7 @@ Set via `vercel.json` response header on all routes:
 
 ```
 default-src   'self'
-script-src    'self' 'unsafe-inline' blob:
+script-src    'self' blob:
 worker-src    'self' blob:
 style-src     'self' 'unsafe-inline' https://fonts.googleapis.com
 font-src      'self' https://fonts.gstatic.com
@@ -378,6 +380,7 @@ Loaded via Google Fonts with `preconnect` hints in `index.html`.
 |-------|---------|-----|---------|
 | Admin status | `localStorage('seis_admin_cache')` | 1 hour | Skip `is_admin` RPC on refresh |
 | Season preference | `localStorage('seis_season')` | Permanent | Remember visitor's season choice |
+| Site context | `sessionStorage('seis_site_cache')` | 5 minutes | Skip 4 Supabase queries on page refresh. Bypassed by `refetch()`. |
 | Chunk reload flag | `sessionStorage('seis_chunk_reload_attempt')` | Session | Prevent reload loops |
 
 ### `index.html` Meta Tag
@@ -451,6 +454,22 @@ Width parameter controls thumbnail resolution:
 - Page headers: `1200`
 - Logos: `400`–`600`
 - Cards: `400`
+
+### Drive Fallback System
+
+Since Google Drive is the permanent media layer (no Supabase Storage), all `<img>` tags include `onError={onImgError}`:
+
+```jsx
+<img src={driveUrl(...)} data-fallback="seis-logo" onError={onImgError} />
+```
+
+`onImgError` (`hooks.js`) reads `data-fallback` slug → looks up in `FALLBACK_MAP` → swaps `src` to `/fallbacks/{slug}.png`. Sets `onerror = null` to prevent infinite loops.
+
+Static fallback images live in `public/fallbacks/` and are committed to the repo. They are served by Vercel with no Drive dependency.
+
+### Drive Health Check (Admin Dashboard)
+
+The Dashboard auto-checks all media slugs on mount by creating hidden `new Image()` objects pointed at `driveUrl(url, 100)`. Each slug reports `onLoad` (green) or `onError` (red). A "Re-check Drive Images" button allows manual re-test. Broken slugs show a warning message with fix instructions.
 
 ---
 
@@ -571,4 +590,5 @@ YYYYMMDD{HHMMSS}_descriptive_name.sql
 - `20260101000000` — initial schema (ran once to bootstrap)
 - `20260420210000` — patch migrations (incremental)
 - All use `ON CONFLICT DO NOTHING` or `DO UPDATE` for idempotent re-runs
-- Must be run **manually** in Supabase SQL Editor (no CLI runner in production)
+- Can be applied via `npm run db:push` (Supabase CLI) or manually in the SQL Editor
+- Applied migrations tracked in the `schema_migrations` table (added in `audit_v6`)

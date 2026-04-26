@@ -4,6 +4,24 @@ All database migrations and significant code changes, in reverse chronological o
 
 ---
 
+## 2026-04-27 — Audit v2 Code Changes
+
+- **Reverted sign-out debounce** — restored 600ms debounce in `AdminLayout.jsx` (intentional for GoTrue token refresh)
+- **Reverted RPC timeout** — restored 15s timeout in `AuthContext.jsx` (intentional for slow venue Wi-Fi)
+- **Added `db:push` script** — `package.json` now has `npm run db:push` for Supabase CLI migration workflow
+- **Hardened CSP** — removed `'unsafe-inline'` from `script-src` in `vercel.json` (Vite emits no inline scripts)
+- **Updated ARCHITECTURE.md** — added schema_migrations, SiteContext cache, Drive fallbacks, db:push, env var docs
+- **Updated TECHNICAL.md** — CSP fix, cache table, Drive fallback/health check docs, migration workflow, env var
+
+## 2026-04-27 — Audit v1 Code Changes
+
+- **Drive image fallbacks** — added `onImgError` handler + `FALLBACK_MAP` in `hooks.js`, applied to Navbar, Footer, Home
+- **Created `public/fallbacks/`** — directory for static Drive image fallbacks (images need manual copy from Drive)
+- **SiteContext cache** — 5-minute `sessionStorage` cache in `SiteContext.jsx`, bypassed by `refetch()`
+- **Drive health check** — auto-check + manual "Re-check" button on Admin Dashboard using hidden `<img>` elements
+- **Age-up date callout** — prominent display in MeetInfo Age Group section with plain-English explanation
+- **Warm-up timing docs** — comments in `Warmup.jsx` and migration clarifying source of truth
+
 ## 2026-04-27 — `20260427000000_audit_v6.sql`
 
 - **Re-documented `set_active_season` RPC** — confirmed already transactional (plpgsql), added inline comment

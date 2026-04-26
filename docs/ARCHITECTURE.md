@@ -1,7 +1,7 @@
 # SEIS — Architecture & Data Flow
 
 > Swimming Eagles Invitational Series website.
-> Last updated: April 26 2026.
+> Last updated: April 27 2026.
 
 ---
 
@@ -72,6 +72,7 @@ Invitational/
 | `media` | Image registry (slug → Google Drive URL) | `slug`, `label`, `google_drive_url`, `alt_text` |
 | `programs` | Downloadable documents per season | `season_slug`, `program_type` (entry_file/heat_sheet/psych_sheet/program_booklet), `google_drive_url`, `is_published` |
 | `bank_details` | Bank transfer info for payments | `bank_name`, `account_number`, `swift_iban`, `is_published` |
+| `schema_migrations` | Tracks which SQL migrations have been applied | `filename` (PK), `applied_at` |
 
 ### RLS Policy Pattern
 
@@ -110,6 +111,7 @@ SiteContext.fetchAll() → parallel Supabase queries:
 | `useScoring()` | `scoring_table` | MeetInfo |
 | `usePrograms(seasonSlug)` | `programs` (filtered) | Programs page, ProgramsAdmin |
 | `useBankDetails()` | `bank_details` WHERE `is_published` | Fees page |
+| `useAdminTable(table)` | Any table | Admin pages (generic CRUD helper) |
 
 ### 4.3 Public Page → Data Source Map
 
@@ -143,6 +145,14 @@ SiteContext.fetchAll() → parallel Supabase queries:
 | **Programs** | `/admin/programs` | `programs` |
 | **Fees** | `/admin/fees` | `bank_details` |
 | **Integrations** | `/admin/integrations` | `site_settings` (URL fields only) |
+
+### 4.5 Site Context Cache
+
+On mount, `SiteContext` checks `sessionStorage('seis_site_cache')` for a cached payload younger than **5 minutes**. If valid, it skips the 4 Supabase queries entirely. `refetch()` (used by admin saves) always bypasses the cache.
+
+### 4.6 Google Drive Image Fallbacks
+
+All `<img>` tags rendering Drive URLs include `onError={onImgError}`. If the Drive thumbnail fails (rate limit, permission, network), the handler swaps `src` to a local static fallback in `public/fallbacks/`. The `FALLBACK_MAP` in `hooks.js` maps media slugs to fallback paths.
 
 ---
 
@@ -251,8 +261,8 @@ Media slugs: `hero-photo`, `seis-logo`, `cac-swimming`, `screaming-eagle`
 ## 10. Build & Deploy
 
 ```bash
-npm run build          # Vite build → dist/
-                       # Also runs build-sitemap.mjs (postbuild)
+npm run build          # Vite build → dist/  (then)→ build-sitemap.mjs
+npm run db:push        # Push migrations to production via Supabase CLI
 
 # Deployed via Vercel:
 # - Push to master → auto-deploy
@@ -265,12 +275,13 @@ npm run build          # Vite build → dist/
 |----------|-------|---------|
 | `VITE_SUPABASE_URL` | `.env` + Vercel | Supabase project URL |
 | `VITE_SUPABASE_ANON_KEY` | `.env` + Vercel | Supabase anon key (public, RLS-protected) |
+| `SUPABASE_DB_URL` | Local only | Direct DB connection string for `npm run db:push` |
 
 ---
 
 ## 11. Migrations
 
-Migrations are in `supabase/migrations/` and must be run **manually** in the Supabase SQL Editor (no CLI migration runner). They are numbered by timestamp:
+Migrations are in `supabase/migrations/` and can be applied via `npm run db:push` (Supabase CLI) or manually in the SQL Editor. They are numbered by timestamp:
 
 | Migration | Purpose |
 |-----------|---------|
@@ -287,3 +298,4 @@ Migrations are in `supabase/migrations/` and must be run **manually** in the Sup
 | `20260426000001_cms_copy_and_event50.sql` | CMS copy blocks, event #50 gap fix |
 | `20260426000002_audit_v5_fixes.sql` | Hide pages, contact title, deadline blocks, maps embed |
 | `20260426000003_sessions_table.sql` | `meet_sessions` table + seed data |
+| `20260427000000_audit_v6.sql` | Indexes, `start_time` semantics, `schema_migrations` table |

@@ -6,7 +6,7 @@ const AuthContext = createContext({})
 // Max time we'll keep the admin shell in the "Loading" state waiting for the
 // is_admin RPC to resolve. If the call hangs (network, stuck gotrue lock,
 // supabase down) we assume "not admin" so the UI never wedges.
-const ADMIN_RPC_TIMEOUT_MS = 5000
+const ADMIN_RPC_TIMEOUT_MS = 15000
 const ADMIN_CACHE_KEY = 'seis_admin_cache'
 const ADMIN_CACHE_TTL_MS = 60 * 60 * 1000 // 1 hour
 
@@ -69,19 +69,13 @@ export function AuthProvider({ children }) {
       return
     }
     verifyInFlightRef.current = true
-    const rpcWithTimeout = () => Promise.race([
-      supabase.rpc('is_current_user_admin'),
-      new Promise(resolve => setTimeout(() => resolve({ data: null, error: new Error('timeout') }), ADMIN_RPC_TIMEOUT_MS)),
-    ])
     try {
-      let result = await rpcWithTimeout()
-      // One retry on failure (network blip, cold start)
+      const result = await Promise.race([
+        supabase.rpc('is_current_user_admin'),
+        new Promise(resolve => setTimeout(() => resolve({ data: null, error: new Error('timeout') }), ADMIN_RPC_TIMEOUT_MS)),
+      ])
       if (result.error) {
-        console.warn('is_current_user_admin RPC failed, retrying:', result.error.message)
-        result = await rpcWithTimeout()
-      }
-      if (result.error) {
-        console.warn('is_current_user_admin RPC failed after retry:', result.error.message)
+        console.warn('is_current_user_admin RPC failed:', result.error.message)
         setIsAdmin(false)
         writeAdminCache(uid, false)
       } else {
