@@ -38,6 +38,15 @@ export default function Login() {
             <button type="submit" disabled={loading} className="admin-btn w-full">{loading ? 'Signing in...' : 'Sign In'}</button>
           </form>
         </div>
+        <div className="text-center mt-4">
+          <button
+            onClick={() => { window.location.href = '/admin/login?reset=1' }}
+            className="text-xs text-gray-600 hover:text-gray-400 transition-colors cursor-pointer bg-transparent border-none"
+            title="Clears stored login + cached data, then reloads"
+          >
+            Trouble signing in? ↻ Reset local session
+          </button>
+        </div>
       </div>
     </div>
   )

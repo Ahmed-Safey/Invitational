@@ -8,6 +8,28 @@ import App from './App'
 import ErrorBoundary from './components/ErrorBoundary'
 import './styles/index.css'
 
+// Universal escape hatch: visiting any URL with `?reset=1` wipes local browser
+// state (localStorage, sessionStorage, caches, service workers) and reloads to
+// the same URL without the query param. Useful if auth/localStorage ever get
+// into a wedged state that a normal refresh can't recover from.
+;(function handleResetParam() {
+  try {
+    const url = new URL(window.location.href)
+    if (url.searchParams.get('reset') !== '1') return
+    try { localStorage.clear() } catch {}
+    try { sessionStorage.clear() } catch {}
+    if ('caches' in window) {
+      caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k)))).catch(() => {})
+    }
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.unregister())).catch(() => {})
+    }
+    url.searchParams.delete('reset')
+    // Replace so ?reset=1 isn't in history; reload to start 100% clean.
+    window.location.replace(url.pathname + (url.search || '') + url.hash)
+  } catch {}
+})()
+
 // If the user had the tab open across a deploy, React.lazy() will try to load
 // a JS chunk whose filename no longer exists on the new deploy. Catch that and
 // force a one-time reload so they get the fresh index.html + new chunk hashes.

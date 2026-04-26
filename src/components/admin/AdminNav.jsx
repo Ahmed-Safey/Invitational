@@ -49,6 +49,20 @@ export default function AdminNav() {
         <div className="p-5 border-t border-white/10">
           <button onClick={signOut} className="w-full text-left text-sm text-gray-500 hover:text-white transition-colors cursor-pointer bg-transparent border-none">Sign Out</button>
           <Link to="/" className="block mt-2 text-xs text-gray-600 no-underline hover:text-gray-400">&larr; View Public Site</Link>
+          {/* Last-resort recovery: reloads with ?reset=1 which wipes localStorage,
+              sessionStorage, caches and any service workers (handled in main.jsx).
+              Use only if the admin shell ever gets wedged. */}
+          <button
+            onClick={() => {
+              if (confirm('Reset local session?\n\nThis clears stored login + cached data and reloads the page. Use this only if the admin panel is stuck or behaving oddly.')) {
+                window.location.href = '/admin/login?reset=1'
+              }
+            }}
+            className="block mt-3 text-[11px] text-gray-700 hover:text-gray-500 transition-colors cursor-pointer bg-transparent border-none p-0"
+            title="Clears local browser state and reloads"
+          >
+            ↻ Reset Session
+          </button>
         </div>
       </aside>
 

@@ -61,8 +61,25 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     let cancelled = false
 
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    // 5s safety timeout on getSession itself. If gotrue's local lock is
+    // wedged (rare but documented) the promise can hang indefinitely; we'd
+    // rather treat the user as signed-out and show /admin/login than spin
+    // forever. Also self-heal: if getSession actually throws (corrupt token
+    // in localStorage), wipe the auth keys so the next visit starts clean.
+    Promise.race([
+      supabase.auth.getSession(),
+      new Promise(resolve => setTimeout(() => resolve({ data: { session: null }, error: new Error('getSession timeout') }), 5000)),
+    ]).then(async (res) => {
       if (cancelled) return
+      const session = res?.data?.session ?? null
+      if (res?.error) {
+        console.warn('getSession failed, treating as signed-out:', res.error.message)
+        // Self-heal: clear gotrue's storage keys so a corrupt token doesn't
+        // wedge every future visit. (Safe no-op if there's nothing there.)
+        try {
+          Object.keys(localStorage).filter(k => k.startsWith('sb-')).forEach(k => localStorage.removeItem(k))
+        } catch {}
+      }
       setUser(session?.user ?? null)
       await verifyAdmin(session)
       if (!cancelled) setLoading(false)
