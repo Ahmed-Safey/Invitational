@@ -83,7 +83,7 @@ export default function Sessions() {
             <div key={s.id} className="info-card mb-4">
               <div className="flex items-baseline justify-between gap-2">
                 <h3>{s.title}</h3>
-                {s.start_time && <span className="font-oswald text-xs tracking-widest text-crimson">{s.start_time}</span>}
+                <span className="font-oswald text-xs tracking-widest text-crimson">{s.start_time || 'TBC'}</span>
               </div>
               {s.description && <p className="text-sm text-gray-500">{s.description}</p>}
             </div>
@@ -99,7 +99,7 @@ export default function Sessions() {
             <div key={s.id} className="info-card mb-4">
               <div className="flex items-baseline justify-between gap-2">
                 <h3>{s.title}</h3>
-                {s.start_time && <span className="font-oswald text-xs tracking-widest text-crimson">{s.start_time}</span>}
+                <span className="font-oswald text-xs tracking-widest text-crimson">{s.start_time || 'TBC'}</span>
               </div>
               {s.description && <p className="text-sm text-gray-500">{s.description}</p>}
             </div>

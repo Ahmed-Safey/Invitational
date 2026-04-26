@@ -1,20 +1,25 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useSite } from '../../lib/SiteContext'
+import { useContent } from '../../lib/hooks'
 import AdminLayout from '../../components/admin/AdminLayout'
 import toast from 'react-hot-toast'
 
 const emptyEvent = { event_number: 0, gender: 'girls', event_name: '', distance: null, stroke: 'freestyle', age_group: '11+', format: 'prelims', day: 1, session: 'morning', sort_order: 0, is_break: false, break_label: '' }
-const emptySession = { day: 1, title: '', description: '', start_time: '', sort_order: 0 }
+const emptySession = { day: 1, title: '', description: '', start_time: 'TBC', sort_order: 0 }
 
-function SessionForm({ sess, onSave, onCancel, saving }) {
+function SessionForm({ sess, onSave, onCancel, saving, dayLabels }) {
   const [f, setF] = useState(sess)
   return (
     <tr className="bg-blue-50">
-      <td className="p-2"><select value={f.day} onChange={e => setF({...f, day: parseInt(e.target.value)})} className="admin-input w-14"><option value={1}>1</option><option value={2}>2</option></select></td>
+      <td className="p-2">
+        <select value={f.day} onChange={e => setF({...f, day: parseInt(e.target.value)})} className="admin-input">
+          {dayLabels.map(d => <option key={d.day} value={d.day}>{d.label}</option>)}
+        </select>
+      </td>
       <td className="p-2"><input value={f.title} onChange={e => setF({...f, title: e.target.value})} className="admin-input" placeholder="e.g. Session 1 — 11+ Prelims" /></td>
       <td className="p-2"><input value={f.description || ''} onChange={e => setF({...f, description: e.target.value})} className="admin-input" placeholder="Events in this session..." /></td>
-      <td className="p-2"><input value={f.start_time || ''} onChange={e => setF({...f, start_time: e.target.value})} className="admin-input w-24" placeholder="8:00 AM" /></td>
+      <td className="p-2"><input value={f.start_time || ''} onChange={e => setF({...f, start_time: e.target.value})} className="admin-input w-28" placeholder="TBC" /></td>
       <td className="p-2"><input type="number" inputMode="numeric" value={f.sort_order} onChange={e => setF({...f, sort_order: parseInt(e.target.value) || 0})} className="admin-input w-16" /></td>
       <td className="p-2">
         <div className="flex gap-1">
@@ -68,6 +73,7 @@ function EventForm({ evt, onSave, onCancel, saving }) {
 
 export default function Events() {
   const { refetch, seasons, currentSeason } = useSite()
+  const { blocks: sched } = useContent('schedule')
   const [events, setEvents] = useState([])
   const [filter, setFilter] = useState({ day: '', session: '', season: '' })
   const [editing, setEditing] = useState(null)
@@ -79,6 +85,14 @@ export default function Events() {
   const [editingSession, setEditingSession] = useState(null)
   const [newSession, setNewSession] = useState(null)
   const [showSessions, setShowSessions] = useState(true)
+
+  // Build day labels from schedule content blocks + season dates
+  const selectedSeason = seasons.find(s => s.slug === (filter.season || currentSeason?.slug))
+  const datesDisplay = selectedSeason?.dates_display || ''
+  const dayLabels = [
+    { day: 1, label: `${sched.day1_tab_label || 'Day 1'}${datesDisplay ? ' — ' + datesDisplay.split('–')[0]?.trim() : ''}` },
+    { day: 2, label: `${sched.day2_tab_label || 'Day 2'}${datesDisplay ? ' — ' + (datesDisplay.includes('–') ? datesDisplay.split('–')[1]?.trim()?.replace(/^(\d+)/, datesDisplay.match(/^([A-Za-z]+)/)?.[1] + ' $1') : datesDisplay) : ''}` },
+  ]
 
   // Default the season filter to the currently active season once it loads
   useEffect(() => {
@@ -199,12 +213,12 @@ export default function Events() {
           <table className="admin-table">
             <thead><tr><th>Day</th><th>Title</th><th>Description</th><th>Time</th><th>Order</th><th>Actions</th></tr></thead>
             <tbody>
-              {newSession && <SessionForm sess={newSession} saving={saving} onSave={saveSession} onCancel={() => setNewSession(null)} />}
+              {newSession && <SessionForm sess={newSession} saving={saving} onSave={saveSession} onCancel={() => setNewSession(null)} dayLabels={dayLabels} />}
               {sessions.map(s => editingSession === s.id ? (
-                <SessionForm key={s.id} sess={s} saving={saving} onSave={saveSession} onCancel={() => setEditingSession(null)} />
+                <SessionForm key={s.id} sess={s} saving={saving} onSave={saveSession} onCancel={() => setEditingSession(null)} dayLabels={dayLabels} />
               ) : (
                 <tr key={s.id}>
-                  <td className="font-bold">{s.day}</td>
+                  <td className="font-bold text-xs">{dayLabels.find(d => d.day === s.day)?.label || `Day ${s.day}`}</td>
                   <td className="font-medium">{s.title}</td>
                   <td className="text-xs text-gray-500 max-w-[300px] truncate">{s.description || '—'}</td>
                   <td className="text-xs">{s.start_time || 'TBC'}</td>
